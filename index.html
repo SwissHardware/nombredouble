@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Les Nombres Doubles 🎉</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bleu: #5ec5e6;
+    --bleu-fonce: #2a9bbf;
+    --jaune: #ffd54a;
+    --rose: #ff8fb1;
+    --vert: #6bd97a;
+    --violet: #b294ff;
+    --rouge: #ff6b6b;
+    --fond: #fff9ec;
+    --texte: #2b3a55;
+  }
+  html, body {
+    height: 100%;
+    font-family: 'Comic Sans MS', 'Comic Neue', system-ui, sans-serif;
+    background: linear-gradient(135deg, #d0f1ff 0%, #fff9ec 50%, #ffe8d4 100%);
+    color: var(--texte);
+    overflow-x: hidden;
+  }
+  body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    min-height: 100vh;
+  }
+  .header {
+    width: 100%;
+    max-width: 900px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  .titre-jeu {
+    font-size: 1.8rem;
+    color: var(--bleu-fonce);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .titre-jeu .libellule { font-size: 2.2rem; animation: flotte 2s ease-in-out infinite; }
+  @keyframes flotte {
+    0%, 100% { transform: translateY(0) rotate(-5deg); }
+    50% { transform: translateY(-8px) rotate(5deg); }
+  }
+  .scoreboard {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+  .score-pill {
+    background: white;
+    border: 3px solid var(--jaune);
+    border-radius: 999px;
+    padding: 8px 18px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    box-shadow: 0 4px 0 rgba(0,0,0,0.08);
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+  .progress-bar {
+    width: 100%;
+    max-width: 900px;
+    height: 14px;
+    background: white;
+    border: 3px solid var(--bleu);
+    border-radius: 999px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--vert), var(--bleu));
+    width: 0%;
+    transition: width 0.5s ease;
+  }
+  .carte {
+    background: white;
+    border-radius: 30px;
+    padding: 35px 30px;
+    width: 100%;
+    max-width: 900px;
+    box-shadow: 0 10px 0 rgba(0,0,0,0.06), 0 20px 40px rgba(0,0,0,0.08);
+    border: 4px solid var(--bleu);
+    position: relative;
+    animation: apparition 0.4s ease;
+  }
+  @keyframes apparition {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .etape-label {
+    background: var(--jaune);
+    color: var(--texte);
+    display: inline-block;
+    padding: 6px 18px;
+    border-radius: 999px;
+    font-size: 0.95rem;
+    font-weight: bold;
+    margin-bottom: 12px;
+  }
+  .consigne {
+    font-size: 1.4rem;
+    margin-bottom: 25px;
+    color: var(--texte);
+  }
+  .grille-doubles {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 18px;
+    margin-bottom: 20px;
+  }
+  .bulle {
+    background: var(--fond);
+    border: 4px solid #e2e8f0;
+    border-radius: 20px;
+    padding: 22px 10px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+    user-select: none;
+  }
+  .bulle:hover { transform: translateY(-4px) scale(1.05); border-color: var(--bleu); }
+  .bulle.choisi-double {
+    background: var(--vert);
+    color: white;
+    border-color: #43a64f;
+    transform: scale(1.05);
+    box-shadow: 0 0 0 4px rgba(107,217,122,0.3);
+  }
+  .bulle.choisi-faux {
+    background: var(--rouge);
+    color: white;
+    border-color: #d94848;
+    animation: secoue 0.4s;
+  }
+  @keyframes secoue {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-8px); }
+    75% { transform: translateX(8px); }
+  }
+  .dominos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 25px;
+    margin: 25px 0;
+  }
+  .domino-bloc {
+    text-align: center;
+  }
+  .domino {
+    background: white;
+    border: 4px solid var(--texte);
+    border-radius: 14px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    height: 90px;
+    width: 180px;
+    margin: 0 auto 12px;
+    position: relative;
+  }
+  .domino::after {
+    content: '';
+    position: absolute;
+    top: 8px;
+    bottom: 8px;
+    left: 50%;
+    width: 3px;
+    background: var(--texte);
+    transform: translateX(-50%);
+  }
+  .domino-cote {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    padding: 8px;
+    place-items: center;
+  }
+  .point {
+    width: 14px;
+    height: 14px;
+    background: var(--texte);
+    border-radius: 50%;
+  }
+  .label-domino {
+    font-size: 1.1rem;
+    margin-bottom: 6px;
+  }
+  .input-double {
+    width: 70px;
+    height: 50px;
+    border: 3px solid var(--bleu);
+    border-radius: 12px;
+    font-size: 1.4rem;
+    text-align: center;
+    font-family: inherit;
+    font-weight: bold;
+    color: var(--texte);
+    background: var(--fond);
+  }
+  .input-double:focus { outline: none; border-color: var(--bleu-fonce); background: white; }
+  .input-double.juste { background: var(--vert); color: white; border-color: #43a64f; }
+  .input-double.faux { background: var(--rouge); color: white; border-color: #d94848; animation: secoue 0.4s; }
+
+  .relier-zone {
+    display: grid;
+    grid-template-columns: 1fr 60px 1fr;
+    gap: 12px;
+    align-items: center;
+    margin: 20px 0;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .relier-calcul, .relier-reponse {
+    background: var(--fond);
+    border: 3px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 14px;
+    font-size: 1.3rem;
+    font-weight: bold;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .relier-calcul:hover, .relier-reponse:hover {
+    transform: scale(1.04);
+    border-color: var(--bleu);
+  }
+  .relier-calcul.actif, .relier-reponse.actif {
+    background: var(--jaune);
+    border-color: var(--bleu-fonce);
+  }
+  .relier-calcul.lie, .relier-reponse.lie {
+    background: var(--vert);
+    color: white;
+    border-color: #43a64f;
+    cursor: default;
+  }
+  .relier-svg {
+    grid-column: 2;
+    grid-row: 1 / -1;
+    width: 60px;
+    height: 100%;
+    pointer-events: none;
+  }
+  .relier-conteneur {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 60px 1fr;
+    gap: 12px;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+  .col-calculs, .col-reponses {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .lignes-svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  .calcs-additions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 18px;
+    margin: 20px 0;
+  }
+  .calc-ligne {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    background: var(--fond);
+    padding: 14px;
+    border-radius: 14px;
+    border: 3px solid #e2e8f0;
+  }
+
+  .boutons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 25px;
+    gap: 12px;
+  }
+  .btn {
+    padding: 14px 30px;
+    border: none;
+    border-radius: 999px;
+    font-family: inherit;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.15s;
+    box-shadow: 0 5px 0 rgba(0,0,0,0.15);
+  }
+  .btn:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 2px 0 rgba(0,0,0,0.15); }
+  .btn-valider { background: var(--vert); color: white; }
+  .btn-valider:hover:not(:disabled) { background: #5cc269; }
+  .btn-suivant { background: var(--bleu); color: white; margin-left: auto; }
+  .btn-suivant:hover:not(:disabled) { background: var(--bleu-fonce); }
+  .btn-recommencer { background: var(--jaune); color: var(--texte); }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .feedback {
+    margin-top: 18px;
+    padding: 14px;
+    border-radius: 14px;
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+    min-height: 24px;
+  }
+  .feedback.ok { background: var(--vert); color: white; }
+  .feedback.ko { background: var(--rouge); color: white; }
+  .feedback.info { background: var(--jaune); color: var(--texte); }
+
+  .ecran-fin {
+    text-align: center;
+    padding: 40px 20px;
+  }
+  .ecran-fin h2 {
+    font-size: 2.5rem;
+    color: var(--bleu-fonce);
+    margin-bottom: 20px;
+  }
+  .gros-trophee {
+    font-size: 6rem;
+    display: inline-block;
+    animation: bondit 1s ease-in-out infinite;
+  }
+  @keyframes bondit {
+    0%, 100% { transform: translateY(0) rotate(-5deg); }
+    50% { transform: translateY(-15px) rotate(5deg); }
+  }
+  .etoiles-finales {
+    font-size: 3rem;
+    margin: 20px 0;
+    letter-spacing: 10px;
+  }
+
+  .ecran-accueil {
+    text-align: center;
+    padding: 30px 20px;
+  }
+  .ecran-accueil h1 {
+    font-size: 2.5rem;
+    color: var(--bleu-fonce);
+    margin-bottom: 10px;
+  }
+  .ecran-accueil .sous-titre {
+    font-size: 1.3rem;
+    color: var(--texte);
+    margin-bottom: 30px;
+    opacity: 0.8;
+  }
+  .grosse-libellule {
+    font-size: 7rem;
+    display: inline-block;
+    animation: flotte 2s ease-in-out infinite;
+    margin-bottom: 20px;
+  }
+  .btn-jouer {
+    background: var(--rose);
+    color: white;
+    padding: 20px 50px;
+    font-size: 1.5rem;
+    margin-top: 20px;
+  }
+  .btn-jouer:hover { background: #e87599; }
+
+  .confetti {
+    position: fixed;
+    width: 12px;
+    height: 12px;
+    pointer-events: none;
+    z-index: 1000;
+    border-radius: 2px;
+  }
+
+  @media (max-width: 600px) {
+    .titre-jeu { font-size: 1.3rem; }
+    .consigne { font-size: 1.1rem; }
+    .bulle { font-size: 1.2rem; padding: 16px 8px; }
+    .ecran-accueil h1 { font-size: 1.8rem; }
+    .gros-trophee { font-size: 4rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="titre-jeu">
+    <span class="libellule">🪰</span>
+    <span>Les Nombres Doubles</span>
+  </div>
+  <div class="scoreboard">
+    <div class="score-pill">⭐ <span id="score">0</span></div>
+  </div>
+</div>
+
+<div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+
+<div id="app"></div>
+
+<script>
+  const app = document.getElementById('app');
+  const progress = document.getElementById('progress');
+  const scoreEl = document.getElementById('score');
+
+  let etapeActuelle = 0;
+  let score = 0;
+  const NB_ETAPES = 5;
+
+  // ---------- ECRAN ACCUEIL ----------
+  function ecranAccueil() {
+    etapeActuelle = 0;
+    score = 0;
+    scoreEl.textContent = 0;
+    progress.style.width = '0%';
+    app.innerHTML = `
+      <div class="carte ecran-accueil">
+        <div class="grosse-libellule">🪰</div>
+        <h1>Bienvenue dans le jeu des doubles !</h1>
+        <p class="sous-titre">5 étapes amusantes t'attendent 🎈</p>
+        <p style="font-size:1.1rem; margin: 20px 0;">Tu vas gagner des ⭐ à chaque bonne réponse !</p>
+        <button class="btn btn-jouer" onclick="commencer()">🚀 C'est parti !</button>
+      </div>
+    `;
+  }
+
+  function commencer() {
+    etapeActuelle = 1;
+    afficherEtape();
+  }
+
+  function majProgress() {
+    progress.style.width = ((etapeActuelle - 1) / NB_ETAPES * 100) + '%';
+  }
+
+  function ajouterScore(n) {
+    score += n;
+    scoreEl.textContent = score;
+    scoreEl.parentElement.animate(
+      [{ transform: 'scale(1)' }, { transform: 'scale(1.3)' }, { transform: 'scale(1)' }],
+      { duration: 400 }
+    );
+  }
+
+  // ---------- ETAPE 1 : Entoure les doubles ----------
+  function etape1() {
+    const calculs = [
+      { txt: '4 + 4', double: true },
+      { txt: '3 + 2', double: false },
+      { txt: '7 + 7', double: true },
+      { txt: '5 + 6', double: false },
+      { txt: '9 + 9', double: true },
+      { txt: '2 + 5', double: false },
+      { txt: '6 + 6', double: true },
+      { txt: '8 + 3', double: false },
+      { txt: '1 + 1', double: true },
+    ];
+    const choix = new Set();
+
+    app.innerHTML = `
+      <div class="carte">
+        <span class="etape-label">Étape 1 / ${NB_ETAPES}</span>
+        <p class="consigne">🎯 <b>Entoure tous les doubles</b> (tape dessus !)</p>
+        <div class="grille-doubles" id="grille1">
+          ${calculs.map((c, i) => `<div class="bulle" data-i="${i}">${c.txt}</div>`).join('')}
+        </div>
+        <div class="feedback" id="fb1"></div>
+        <div class="boutons">
+          <button class="btn btn-valider" onclick="validerEtape1()">✓ Valider</button>
+        </div>
+      </div>
+    `;
+
+    document.querySelectorAll('#grille1 .bulle').forEach(el => {
+      el.addEventListener('click', () => {
+        const i = parseInt(el.dataset.i);
+        if (choix.has(i)) {
+          choix.delete(i);
+          el.classList.remove('choisi-double');
+        } else {
+          choix.add(i);
+          el.classList.add('choisi-double');
+        }
+      });
+    });
+
+    window.validerEtape1 = () => {
+      let bons = 0, mauvais = 0;
+      calculs.forEach((c, i) => {
+        const el = document.querySelector(`#grille1 .bulle[data-i="${i}"]`);
+        if (c.double && choix.has(i)) { bons++; el.classList.add('choisi-double'); }
+        else if (c.double && !choix.has(i)) { el.classList.add('choisi-faux'); }
+        else if (!c.double && choix.has(i)) { mauvais++; el.classList.add('choisi-faux'); }
+      });
+      const fb = document.getElementById('fb1');
+      const totalBons = calculs.filter(c => c.double).length;
+      if (bons === totalBons && mauvais === 0) {
+        fb.className = 'feedback ok';
+        fb.textContent = '🎉 Parfait ! Tous les doubles trouvés !';
+        ajouterScore(3);
+        confetti();
+      } else {
+        fb.className = 'feedback info';
+        fb.textContent = `Tu as trouvé ${bons}/${totalBons} doubles. Les bonnes réponses sont en vert.`;
+        ajouterScore(bons);
+      }
+      document.querySelector('.btn-valider').style.display = 'none';
+      const btns = document.querySelector('.boutons');
+      btns.innerHTML += `<button class="btn btn-suivant" onclick="etapeSuivante()">Suivant →</button>`;
+    };
+  }
+
+  // ---------- ETAPE 2 : Doubles avec dominos ----------
+  function etape2() {
+    const dominos = [
+      { n: 2 }, { n: 4 }, { n: 5 }, { n: 3 }
+    ];
+
+    function pointsDomino(n) {
+      // positions sur grille 3x3 (index 1-9, comme un dé)
+      const positions = {
+        1: [5],
+        2: [1, 9],
+        3: [1, 5, 9],
+        4: [1, 3, 7, 9],
+        5: [1, 3, 5, 7, 9],
+        6: [1, 3, 4, 6, 7, 9],
+      };
+      const pos = positions[n] || [];
+      let html = '';
+      for (let i = 1; i <= 9; i++) {
+        html += pos.includes(i) ? '<div class="point"></div>' : '<div></div>';
+      }
+      return html;
+    }
+
+    app.innerHTML = `
+      <div class="carte">
+        <span class="etape-label">Étape 2 / ${NB_ETAPES}</span>
+        <p class="consigne">🎲 <b>Écris le double</b> de chaque domino</p>
+        <div class="dominos">
+          ${dominos.map((d, i) => `
+            <div class="domino-bloc">
+              <div class="domino">
+                <div class="domino-cote">${pointsDomino(d.n)}</div>
+                <div class="domino-cote">${pointsDomino(d.n)}</div>
+              </div>
+              <div class="label-domino">double de ${d.n} =</div>
+              <input class="input-double" type="number" data-rep="${d.n*2}" inputmode="numeric" />
+            </div>
+          `).join('')}
+        </div>
+        <div class="feedback" id="fb2"></div>
+        <div class="boutons">
+          <button class="btn btn-valider" onclick="validerEtape2()">✓ Valider</button>
+        </div>
+      </div>
+    `;
+
+    window.validerEtape2 = () => {
+      let bons = 0;
+      document.querySelectorAll('.input-double').forEach(inp => {
+        const rep = parseInt(inp.dataset.rep);
+        const val = parseInt(inp.value);
+        if (val === rep) { inp.classList.add('juste'); bons++; }
+        else { inp.classList.add('faux'); inp.value = rep; }
+      });
+      const fb = document.getElementById('fb2');
+      if (bons === 4) {
+        fb.className = 'feedback ok';
+        fb.textContent = '🌟 Bravo ! Toutes les réponses sont justes !';
+        ajouterScore(4);
+        confetti();
+      } else {
+        fb.className = 'feedback info';
+        fb.textContent = `Tu as ${bons}/4 bonnes réponses. Voici les bonnes valeurs !`;
+        ajouterScore(bons);
+      }
+      document.querySelector('.btn-valider').style.display = 'none';
+      document.querySelector('.boutons').innerHTML += `<button class="btn btn-suivant" onclick="etapeSuivante()">Suivant →</button>`;
+    };
+  }
+
+  // ---------- ETAPE 3 : Relier ----------
+  function etape3() {
+    const paires = [
+      { calc: '3 + 3', rep: 6 },
+      { calc: '8 + 8', rep: 16 },
+      { calc: '4 + 4', rep: 8 },
+      { calc: '9 + 9', rep: 18 },
+      { calc: '2 + 2', rep: 4 },
+    ];
+    // mélanger les réponses
+    const reponsesMelangees = [...paires].sort(() => Math.random() - 0.5);
+
+    let calculActif = null;
+    const liens = new Map(); // calcId -> repId
+    const couleurs = ['#ff6b6b', '#5ec5e6', '#ffd54a', '#6bd97a', '#b294ff'];
+
+    app.innerHTML = `
+      <div class="carte">
+        <span class="etape-label">Étape 3 / ${NB_ETAPES}</span>
+        <p class="consigne">🔗 <b>Relie</b> chaque calcul à sa réponse (tape l'un puis l'autre)</p>
+        <div class="relier-conteneur">
+          <div class="col-calculs">
+            ${paires.map((p, i) => `<div class="relier-calcul" data-c="${i}" data-rep="${p.rep}">${p.calc}</div>`).join('')}
+          </div>
+          <svg class="lignes-svg" id="svg-liens"></svg>
+          <div class="col-reponses">
+            ${reponsesMelangees.map((p, i) => `<div class="relier-reponse" data-r="${i}" data-val="${p.rep}">${p.rep}</div>`).join('')}
+          </div>
+        </div>
+        <div class="feedback" id="fb3"></div>
+        <div class="boutons">
+          <button class="btn btn-valider" onclick="validerEtape3()" disabled>✓ Valider</button>
+        </div>
+      </div>
+    `;
+
+    const svg = document.getElementById('svg-liens');
+    const conteneur = document.querySelector('.relier-conteneur');
+
+    function redessinerLignes() {
+      const rect = conteneur.getBoundingClientRect();
+      svg.setAttribute('viewBox', `0 0 ${rect.width} ${rect.height}`);
+      svg.style.width = rect.width + 'px';
+      svg.style.height = rect.height + 'px';
+      svg.innerHTML = '';
+      let idx = 0;
+      liens.forEach((rId, cId) => {
+        const cEl = document.querySelector(`.relier-calcul[data-c="${cId}"]`);
+        const rEl = document.querySelector(`.relier-reponse[data-r="${rId}"]`);
+        const cR = cEl.getBoundingClientRect();
+        const rR = rEl.getBoundingClientRect();
+        const x1 = cR.right - rect.left;
+        const y1 = cR.top + cR.height/2 - rect.top;
+        const x2 = rR.left - rect.left;
+        const y2 = rR.top + rR.height/2 - rect.top;
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', x1);
+        line.setAttribute('y1', y1);
+        line.setAttribute('x2', x2);
+        line.setAttribute('y2', y2);
+        line.setAttribute('stroke', couleurs[idx % couleurs.length]);
+        line.setAttribute('stroke-width', 5);
+        line.setAttribute('stroke-linecap', 'round');
+        svg.appendChild(line);
+        idx++;
+      });
+    }
+
+    function essayerLien(rId) {
+      if (calculActif === null) return;
+      // retirer ancien lien sur ce calcul et sur cette reponse
+      liens.forEach((r, c) => {
+        if (r === rId) {
+          liens.delete(c);
+          document.querySelector(`.relier-calcul[data-c="${c}"]`).classList.remove('actif');
+        }
+      });
+      liens.set(calculActif, rId);
+      document.querySelector(`.relier-calcul[data-c="${calculActif}"]`).classList.remove('actif');
+      calculActif = null;
+      redessinerLignes();
+      if (liens.size === paires.length) {
+        document.querySelector('.btn-valider').disabled = false;
+      }
+    }
+
+    document.querySelectorAll('.relier-calcul').forEach(el => {
+      el.addEventListener('click', () => {
+        if (el.classList.contains('lie')) return;
+        document.querySelectorAll('.relier-calcul.actif').forEach(e => e.classList.remove('actif'));
+        calculActif = parseInt(el.dataset.c);
+        el.classList.add('actif');
+      });
+    });
+    document.querySelectorAll('.relier-reponse').forEach(el => {
+      el.addEventListener('click', () => {
+        if (calculActif !== null) {
+          essayerLien(parseInt(el.dataset.r));
+        }
+      });
+    });
+
+    window.addEventListener('resize', redessinerLignes);
+
+    window.validerEtape3 = () => {
+      let bons = 0;
+      liens.forEach((rId, cId) => {
+        const cEl = document.querySelector(`.relier-calcul[data-c="${cId}"]`);
+        const rEl = document.querySelector(`.relier-reponse[data-r="${rId}"]`);
+        const repAttendue = parseInt(cEl.dataset.rep);
+        const repDonnee = parseInt(rEl.dataset.val);
+        if (repAttendue === repDonnee) {
+          bons++;
+          cEl.classList.add('lie');
+          rEl.classList.add('lie');
+        }
+      });
+      const fb = document.getElementById('fb3');
+      if (bons === paires.length) {
+        fb.className = 'feedback ok';
+        fb.textContent = '🎊 Super ! Toutes les paires sont bien reliées !';
+        ajouterScore(5);
+        confetti();
+      } else {
+        fb.className = 'feedback info';
+        fb.textContent = `${bons}/${paires.length} paires correctes. Continue !`;
+        ajouterScore(bons);
+      }
+      document.querySelector('.btn-valider').style.display = 'none';
+      document.querySelector('.boutons').innerHTML += `<button class="btn btn-suivant" onclick="etapeSuivante()">Suivant →</button>`;
+    };
+  }
+
+  // ---------- ETAPE 4 : Calculs doubles à écrire ----------
+  function etape4() {
+    const calculs = [
+      { a: 5, b: 5 },
+      { a: 7, b: 7 },
+      { a: 10, b: 10 },
+      { a: 6, b: 6 },
+    ];
+    app.innerHTML = `
+      <div class="carte">
+        <span class="etape-label">Étape 4 / ${NB_ETAPES}</span>
+        <p class="consigne">✏️ <b>Trouve les réponses</b> des doubles</p>
+        <div class="calcs-additions">
+          ${calculs.map(c => `
+            <div class="calc-ligne">
+              <span>${c.a} + ${c.b} =</span>
+              <input class="input-double" type="number" data-rep="${c.a+c.b}" inputmode="numeric" />
+            </div>
+          `).join('')}
+        </div>
+        <div class="feedback" id="fb4"></div>
+        <div class="boutons">
+          <button class="btn btn-valider" onclick="validerEtape4()">✓ Valider</button>
+        </div>
+      </div>
+    `;
+    window.validerEtape4 = () => {
+      let bons = 0;
+      document.querySelectorAll('.input-double').forEach(inp => {
+        const rep = parseInt(inp.dataset.rep);
+        const val = parseInt(inp.value);
+        if (val === rep) { inp.classList.add('juste'); bons++; }
+        else { inp.classList.add('faux'); inp.value = rep; }
+      });
+      const fb = document.getElementById('fb4');
+      if (bons === 4) {
+        fb.className = 'feedback ok';
+        fb.textContent = '💯 Génial ! Tu maîtrises les doubles !';
+        ajouterScore(4);
+        confetti();
+      } else {
+        fb.className = 'feedback info';
+        fb.textContent = `${bons}/4 bonnes réponses. Pas grave, on continue !`;
+        ajouterScore(bons);
+      }
+      document.querySelector('.btn-valider').style.display = 'none';
+      document.querySelector('.boutons').innerHTML += `<button class="btn btn-suivant" onclick="etapeSuivante()">Suivant →</button>`;
+    };
+  }
+
+  // ---------- ETAPE 5 : Écrire le double de chaque nombre ----------
+  function etape5() {
+    const nombres = [3, 8, 4, 6, 9, 5];
+    app.innerHTML = `
+      <div class="carte">
+        <span class="etape-label">Étape 5 / ${NB_ETAPES}</span>
+        <p class="consigne">🎯 <b>Écris le double</b> de chaque nombre</p>
+        <div class="calcs-additions">
+          ${nombres.map(n => `
+            <div class="calc-ligne">
+              <span>${n} →</span>
+              <input class="input-double" type="number" data-rep="${n*2}" inputmode="numeric" />
+            </div>
+          `).join('')}
+        </div>
+        <div class="feedback" id="fb5"></div>
+        <div class="boutons">
+          <button class="btn btn-valider" onclick="validerEtape5()">✓ Valider</button>
+        </div>
+      </div>
+    `;
+    window.validerEtape5 = () => {
+      let bons = 0;
+      document.querySelectorAll('.input-double').forEach(inp => {
+        const rep = parseInt(inp.dataset.rep);
+        const val = parseInt(inp.value);
+        if (val === rep) { inp.classList.add('juste'); bons++; }
+        else { inp.classList.add('faux'); inp.value = rep; }
+      });
+      const fb = document.getElementById('fb5');
+      if (bons === nombres.length) {
+        fb.className = 'feedback ok';
+        fb.textContent = '🏆 Champion(ne) des doubles !';
+        ajouterScore(6);
+        confetti();
+      } else {
+        fb.className = 'feedback info';
+        fb.textContent = `${bons}/${nombres.length} bonnes réponses.`;
+        ajouterScore(bons);
+      }
+      document.querySelector('.btn-valider').style.display = 'none';
+      document.querySelector('.boutons').innerHTML += `<button class="btn btn-suivant" onclick="ecranFin()">Terminer 🏁</button>`;
+    };
+  }
+
+  function etapeSuivante() {
+    etapeActuelle++;
+    afficherEtape();
+  }
+
+  function afficherEtape() {
+    majProgress();
+    if (etapeActuelle === 1) etape1();
+    else if (etapeActuelle === 2) etape2();
+    else if (etapeActuelle === 3) etape3();
+    else if (etapeActuelle === 4) etape4();
+    else if (etapeActuelle === 5) etape5();
+    else ecranFin();
+  }
+
+  function ecranFin() {
+    progress.style.width = '100%';
+    const maxScore = 22;
+    let etoiles = 1;
+    if (score >= maxScore * 0.6) etoiles = 2;
+    if (score >= maxScore * 0.85) etoiles = 3;
+    const msg = etoiles === 3 ? 'Parfait, tu es un(e) PRO ! 🌟'
+              : etoiles === 2 ? 'Très bien joué ! 👏'
+              : 'Bravo d\'avoir fini ! 💪';
+    app.innerHTML = `
+      <div class="carte ecran-fin">
+        <div class="gros-trophee">🏆</div>
+        <h2>${msg}</h2>
+        <p style="font-size:1.3rem; margin: 10px 0;">Score : <b>${score}</b> ⭐</p>
+        <div class="etoiles-finales">
+          ${'⭐'.repeat(etoiles)}${'☆'.repeat(3-etoiles)}
+        </div>
+        <button class="btn btn-recommencer" onclick="ecranAccueil()">🔄 Rejouer</button>
+      </div>
+    `;
+    confetti(60);
+  }
+
+  // ---------- CONFETTIS ----------
+  function confetti(qte = 30) {
+    const couleurs = ['#ff6b6b', '#5ec5e6', '#ffd54a', '#6bd97a', '#b294ff', '#ff8fb1'];
+    for (let i = 0; i < qte; i++) {
+      const c = document.createElement('div');
+      c.className = 'confetti';
+      c.style.background = couleurs[Math.floor(Math.random() * couleurs.length)];
+      c.style.left = Math.random() * 100 + 'vw';
+      c.style.top = '-20px';
+      document.body.appendChild(c);
+      const duration = 1500 + Math.random() * 1500;
+      const driftX = (Math.random() - 0.5) * 200;
+      const rot = Math.random() * 720;
+      c.animate(
+        [
+          { transform: `translate(0, 0) rotate(0deg)`, opacity: 1 },
+          { transform: `translate(${driftX}px, 110vh) rotate(${rot}deg)`, opacity: 0.5 }
+        ],
+        { duration, easing: 'cubic-bezier(0.2, 0.7, 0.3, 1)' }
+      );
+      setTimeout(() => c.remove(), duration);
+    }
+  }
+
+  ecranAccueil();
+</script>
+</body>
+</html>
