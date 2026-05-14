@@ -496,6 +496,19 @@
     .col-calculs, .col-reponses { gap: 20px; }
     .relier-calcul, .relier-reponse { font-size: 1.1rem; padding: 12px; }
   }
+
+  .signature {
+    margin-top: 22px;
+    padding: 10px 18px;
+    background: white;
+    border-radius: 999px;
+    border: 3px solid var(--rouge);
+    font-size: 0.95rem;
+    color: var(--rouge-fonce);
+    font-weight: bold;
+    box-shadow: 0 4px 0 rgba(0,0,0,0.08);
+  }
+  .signature .nom { color: var(--texte); }
 </style>
 </head>
 <body>
@@ -514,6 +527,8 @@
 </div>
 
 <div id="app"></div>
+
+<div class="signature">🐞 Créé par <span class="nom">Chloé Drevon</span></div>
 
 <script>
   const app = document.getElementById('app');
@@ -554,6 +569,7 @@
         <h1>Salut champion(ne) !</h1>
         <p class="sous-titre">Aide la coccinelle à collectionner ses amies ! 🐞<br>
         <b>7 niveaux</b> à réussir = <b>7 coccinelles</b> à gagner</p>
+        <p style="font-size:0.95rem; margin-top:8px; opacity:0.7;">Un jeu de Chloé Drevon</p>
         <button class="btn btn-jouer" onclick="commencerNiveau(1)">🚀 C'est parti !</button>
       </div>
     `;
