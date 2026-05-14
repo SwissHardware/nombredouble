@@ -3,24 +3,27 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Les Nombres Doubles 🎉</title>
+<title>Les Doubles avec Coccinelle 🐞</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
+    --rouge: #ff5252;
+    --rouge-fonce: #c83232;
+    --noir: #1f1f1f;
     --bleu: #5ec5e6;
     --bleu-fonce: #2a9bbf;
     --jaune: #ffd54a;
     --rose: #ff8fb1;
     --vert: #6bd97a;
+    --vert-fonce: #43a64f;
     --violet: #b294ff;
-    --rouge: #ff6b6b;
-    --fond: #fff9ec;
+    --fond: #fffaf2;
     --texte: #2b3a55;
   }
   html, body {
     height: 100%;
     font-family: 'Comic Sans MS', 'Comic Neue', system-ui, sans-serif;
-    background: linear-gradient(135deg, #d0f1ff 0%, #fff9ec 50%, #ffe8d4 100%);
+    background: linear-gradient(135deg, #ffe5e5 0%, #fff9ec 50%, #d0f1ff 100%);
     color: var(--texte);
     overflow-x: hidden;
   }
@@ -28,71 +31,88 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 20px;
+    padding: 16px;
     min-height: 100vh;
   }
+  /* ---- HEADER ---- */
   .header {
     width: 100%;
-    max-width: 900px;
+    max-width: 950px;
+    background: white;
+    border-radius: 28px;
+    padding: 14px 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 6px 0 rgba(0,0,0,0.08);
+    border: 4px solid var(--rouge);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .header-haut {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    gap: 12px;
+    flex-wrap: wrap;
   }
   .titre-jeu {
-    font-size: 1.8rem;
-    color: var(--bleu-fonce);
+    font-size: 1.5rem;
+    color: var(--rouge-fonce);
     display: flex;
     align-items: center;
-    gap: 10px;
-  }
-  .titre-jeu .libellule { font-size: 2.2rem; animation: flotte 2s ease-in-out infinite; }
-  @keyframes flotte {
-    0%, 100% { transform: translateY(0) rotate(-5deg); }
-    50% { transform: translateY(-8px) rotate(5deg); }
-  }
-  .scoreboard {
-    display: flex;
-    gap: 12px;
-    align-items: center;
-  }
-  .score-pill {
-    background: white;
-    border: 3px solid var(--jaune);
-    border-radius: 999px;
-    padding: 8px 18px;
-    font-size: 1.1rem;
+    gap: 8px;
     font-weight: bold;
-    box-shadow: 0 4px 0 rgba(0,0,0,0.08);
-    display: flex;
-    gap: 6px;
-    align-items: center;
   }
-  .progress-bar {
-    width: 100%;
-    max-width: 900px;
-    height: 14px;
-    background: white;
-    border: 3px solid var(--bleu);
+  .niveau-actuel {
+    background: var(--jaune);
+    padding: 6px 16px;
     border-radius: 999px;
-    overflow: hidden;
-    margin-bottom: 20px;
+    font-weight: bold;
+    font-size: 1rem;
   }
-  .progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--vert), var(--bleu));
-    width: 0%;
-    transition: width 0.5s ease;
+  .collection-coccinelles {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
   }
+  .slot-cocci {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #f0f0f0;
+    border: 3px dashed #ccc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    color: #aaa;
+    transition: all 0.4s;
+  }
+  .slot-cocci.gagnee {
+    background: linear-gradient(135deg, #fff0c4, #ffd54a);
+    border-style: solid;
+    border-color: var(--rouge);
+    transform: scale(1.05);
+    box-shadow: 0 0 0 4px rgba(255,82,82,0.2);
+  }
+  .slot-cocci.gagnee::before { content: '🐞'; }
+  @keyframes pop-cocci {
+    0% { transform: scale(0) rotate(-180deg); }
+    60% { transform: scale(1.4) rotate(20deg); }
+    100% { transform: scale(1.05) rotate(0); }
+  }
+  .slot-cocci.nouvelle { animation: pop-cocci 0.7s ease; }
+
+  /* ---- CARTE ---- */
   .carte {
     background: white;
     border-radius: 30px;
-    padding: 35px 30px;
+    padding: 30px 26px;
     width: 100%;
-    max-width: 900px;
+    max-width: 950px;
     box-shadow: 0 10px 0 rgba(0,0,0,0.06), 0 20px 40px rgba(0,0,0,0.08);
-    border: 4px solid var(--bleu);
-    position: relative;
+    border: 4px solid var(--rouge);
     animation: apparition 0.4s ease;
   }
   @keyframes apparition {
@@ -100,8 +120,8 @@
     to { opacity: 1; transform: translateY(0); }
   }
   .etape-label {
-    background: var(--jaune);
-    color: var(--texte);
+    background: var(--rouge);
+    color: white;
     display: inline-block;
     padding: 6px 18px;
     border-radius: 999px;
@@ -111,39 +131,46 @@
   }
   .consigne {
     font-size: 1.4rem;
-    margin-bottom: 25px;
+    margin-bottom: 22px;
     color: var(--texte);
+    font-weight: bold;
   }
+  .consigne .gros-emoji { font-size: 1.6rem; }
+
+  /* ---- COMPOSANTS ---- */
   .grille-doubles {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 18px;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 14px;
     margin-bottom: 20px;
   }
   .bulle {
-    background: var(--fond);
-    border: 4px solid #e2e8f0;
-    border-radius: 20px;
+    background: linear-gradient(135deg, var(--fond), #ffeaca);
+    border: 4px solid #f0d8a8;
+    border-radius: 22px;
     padding: 22px 10px;
-    font-size: 1.5rem;
+    font-size: 1.6rem;
     font-weight: bold;
     cursor: pointer;
     text-align: center;
     transition: all 0.2s;
     user-select: none;
+    color: var(--texte);
   }
-  .bulle:hover { transform: translateY(-4px) scale(1.05); border-color: var(--bleu); }
+  .bulle:hover, .bulle:active {
+    transform: translateY(-4px) scale(1.04);
+    border-color: var(--rouge);
+  }
   .bulle.choisi-double {
-    background: var(--vert);
+    background: linear-gradient(135deg, #8fe89e, var(--vert));
     color: white;
-    border-color: #43a64f;
+    border-color: var(--vert-fonce);
     transform: scale(1.05);
-    box-shadow: 0 0 0 4px rgba(107,217,122,0.3);
   }
   .bulle.choisi-faux {
-    background: var(--rouge);
+    background: linear-gradient(135deg, #ff8a8a, var(--rouge));
     color: white;
-    border-color: #d94848;
+    border-color: var(--rouge-fonce);
     animation: secoue 0.4s;
   }
   .bulle.oublie {
@@ -160,30 +187,36 @@
     right: -8px;
     font-size: 1.4rem;
   }
+  .bulle.juste-vu {
+    background: linear-gradient(135deg, #8fe89e, var(--vert));
+    color: white;
+    border-color: var(--vert-fonce);
+  }
   @keyframes secoue {
     0%, 100% { transform: translateX(0); }
     25% { transform: translateX(-8px); }
     75% { transform: translateX(8px); }
   }
+
+  /* ---- DOMINOS ---- */
   .dominos {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 25px;
-    margin: 25px 0;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 24px;
+    margin: 24px 0;
   }
-  .domino-bloc {
-    text-align: center;
-  }
+  .domino-bloc { text-align: center; }
   .domino {
     background: white;
-    border: 4px solid var(--texte);
+    border: 4px solid var(--noir);
     border-radius: 14px;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    height: 90px;
-    width: 180px;
-    margin: 0 auto 12px;
+    height: 95px;
+    width: 190px;
+    margin: 0 auto 14px;
     position: relative;
+    box-shadow: 0 4px 0 rgba(0,0,0,0.15);
   }
   .domino::after {
     content: '';
@@ -192,7 +225,7 @@
     bottom: 8px;
     left: 50%;
     width: 3px;
-    background: var(--texte);
+    background: var(--noir);
     transform: translateX(-50%);
   }
   .domino-cote {
@@ -203,61 +236,64 @@
     place-items: center;
   }
   .point {
-    width: 14px;
-    height: 14px;
-    background: var(--texte);
+    width: 15px;
+    height: 15px;
+    background: var(--noir);
     border-radius: 50%;
   }
   .label-domino {
-    font-size: 1.1rem;
-    margin-bottom: 6px;
+    font-size: 1.15rem;
+    margin-bottom: 8px;
+    font-weight: bold;
   }
   .input-double {
-    width: 70px;
-    height: 50px;
-    border: 3px solid var(--bleu);
-    border-radius: 12px;
-    font-size: 1.4rem;
+    width: 80px;
+    height: 56px;
+    border: 4px solid var(--bleu);
+    border-radius: 14px;
+    font-size: 1.6rem;
     text-align: center;
     font-family: inherit;
     font-weight: bold;
     color: var(--texte);
     background: var(--fond);
   }
-  .input-double:focus { outline: none; border-color: var(--bleu-fonce); background: white; }
-  .input-double.juste { background: var(--vert); color: white; border-color: #43a64f; }
-  .input-double.faux { background: var(--rouge); color: white; border-color: #d94848; animation: secoue 0.4s; }
+  .input-double:focus { outline: none; border-color: var(--bleu-fonce); background: white; transform: scale(1.05); }
+  .input-double.juste { background: linear-gradient(135deg, #8fe89e, var(--vert)); color: white; border-color: var(--vert-fonce); }
+  .input-double.faux { background: linear-gradient(135deg, #ff8a8a, var(--rouge)); color: white; border-color: var(--rouge-fonce); animation: secoue 0.4s; }
   .input-double.oublie {
     background: #fff0c4;
     border-color: var(--jaune);
     border-style: dashed;
     color: var(--texte);
   }
-  .calc-ligne .oubli-icone, .domino-bloc .oubli-icone {
+  .oubli-icone {
     display: none;
     color: #c98a00;
     font-size: 0.95rem;
     font-weight: bold;
-    margin-left: 8px;
+    margin-left: 6px;
   }
-  .calc-ligne.a-oublie .oubli-icone, .domino-bloc.a-oublie .oubli-icone {
-    display: inline;
-  }
+  .a-oublie .oubli-icone { display: inline; }
 
-  .relier-zone {
+  /* ---- RELIER ---- */
+  .relier-conteneur {
+    position: relative;
     display: grid;
-    grid-template-columns: 1fr 60px 1fr;
+    grid-template-columns: 1fr 80px 1fr;
+    gap: 14px;
+    max-width: 540px;
+    margin: 0 auto;
+  }
+  .col-calculs, .col-reponses {
+    display: flex;
+    flex-direction: column;
     gap: 12px;
-    align-items: center;
-    margin: 20px 0;
-    max-width: 500px;
-    margin-left: auto;
-    margin-right: auto;
   }
   .relier-calcul, .relier-reponse {
-    background: var(--fond);
-    border: 3px solid #e2e8f0;
-    border-radius: 14px;
+    background: linear-gradient(135deg, var(--fond), #ffeaca);
+    border: 4px solid #f0d8a8;
+    border-radius: 16px;
     padding: 14px;
     font-size: 1.3rem;
     font-weight: bold;
@@ -267,16 +303,23 @@
   }
   .relier-calcul:hover, .relier-reponse:hover {
     transform: scale(1.04);
-    border-color: var(--bleu);
+    border-color: var(--rouge);
   }
   .relier-calcul.actif, .relier-reponse.actif {
-    background: var(--jaune);
-    border-color: var(--bleu-fonce);
+    background: linear-gradient(135deg, #ffe388, var(--jaune));
+    border-color: var(--rouge);
+    transform: scale(1.06);
   }
   .relier-calcul.lie, .relier-reponse.lie {
-    background: var(--vert);
+    background: linear-gradient(135deg, #8fe89e, var(--vert));
     color: white;
-    border-color: #43a64f;
+    border-color: var(--vert-fonce);
+    cursor: default;
+  }
+  .relier-calcul.lie-faux, .relier-reponse.lie-faux {
+    background: linear-gradient(135deg, #ff8a8a, var(--rouge));
+    color: white;
+    border-color: var(--rouge-fonce);
     cursor: default;
   }
   .relier-calcul.oublie, .relier-reponse.oublie {
@@ -293,26 +336,6 @@
     right: -8px;
     font-size: 1.2rem;
   }
-  .relier-svg {
-    grid-column: 2;
-    grid-row: 1 / -1;
-    width: 60px;
-    height: 100%;
-    pointer-events: none;
-  }
-  .relier-conteneur {
-    position: relative;
-    display: grid;
-    grid-template-columns: 1fr 60px 1fr;
-    gap: 12px;
-    max-width: 500px;
-    margin: 0 auto;
-  }
-  .col-calculs, .col-reponses {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
   .lignes-svg {
     position: absolute;
     top: 0;
@@ -322,9 +345,10 @@
     pointer-events: none;
   }
 
+  /* ---- CALCULS ---- */
   .calcs-additions {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
     gap: 18px;
     margin: 20px 0;
   }
@@ -333,106 +357,122 @@
     align-items: center;
     justify-content: center;
     gap: 12px;
-    font-size: 1.5rem;
+    font-size: 1.6rem;
     font-weight: bold;
-    background: var(--fond);
-    padding: 14px;
-    border-radius: 14px;
-    border: 3px solid #e2e8f0;
+    background: linear-gradient(135deg, var(--fond), #fffaf2);
+    padding: 16px;
+    border-radius: 16px;
+    border: 4px solid #f0d8a8;
   }
 
+  /* ---- BOUTONS ---- */
   .boutons {
     display: flex;
     justify-content: space-between;
-    margin-top: 25px;
+    margin-top: 22px;
     gap: 12px;
+    flex-wrap: wrap;
   }
   .btn {
-    padding: 14px 30px;
+    padding: 16px 32px;
     border: none;
     border-radius: 999px;
     font-family: inherit;
-    font-size: 1.1rem;
+    font-size: 1.2rem;
     font-weight: bold;
     cursor: pointer;
     transition: all 0.15s;
-    box-shadow: 0 5px 0 rgba(0,0,0,0.15);
+    box-shadow: 0 5px 0 rgba(0,0,0,0.18);
   }
-  .btn:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 2px 0 rgba(0,0,0,0.15); }
+  .btn:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 2px 0 rgba(0,0,0,0.18); }
   .btn-valider { background: var(--vert); color: white; }
   .btn-valider:hover:not(:disabled) { background: #5cc269; }
   .btn-suivant { background: var(--bleu); color: white; margin-left: auto; }
   .btn-suivant:hover:not(:disabled) { background: var(--bleu-fonce); }
   .btn-recommencer { background: var(--jaune); color: var(--texte); }
+  .btn-rejouer-niveau { background: var(--rose); color: white; }
+  .btn-rejouer-niveau:hover { background: #e87599; }
   .btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
   .feedback {
-    margin-top: 18px;
-    padding: 14px;
-    border-radius: 14px;
+    margin-top: 16px;
+    padding: 16px;
+    border-radius: 16px;
     text-align: center;
     font-size: 1.2rem;
     font-weight: bold;
     min-height: 24px;
   }
-  .feedback.ok { background: var(--vert); color: white; }
-  .feedback.ko { background: var(--rouge); color: white; }
-  .feedback.info { background: var(--jaune); color: var(--texte); }
+  .feedback.ok { background: linear-gradient(135deg, #8fe89e, var(--vert)); color: white; }
+  .feedback.ko { background: linear-gradient(135deg, #ff8a8a, var(--rouge)); color: white; }
+  .feedback.info { background: linear-gradient(135deg, #ffe388, var(--jaune)); color: var(--texte); }
 
-  .ecran-fin {
+  /* ---- ECRAN ACCUEIL / FIN ---- */
+  .ecran-accueil, .ecran-fin, .ecran-niveau-reussi {
     text-align: center;
-    padding: 40px 20px;
+    padding: 30px 20px;
   }
-  .ecran-fin h2 {
-    font-size: 2.5rem;
-    color: var(--bleu-fonce);
-    margin-bottom: 20px;
+  .ecran-accueil h1 {
+    font-size: 2.3rem;
+    color: var(--rouge-fonce);
+    margin-bottom: 10px;
+  }
+  .ecran-accueil .sous-titre {
+    font-size: 1.3rem;
+    margin-bottom: 22px;
+    opacity: 0.8;
+  }
+  .grosse-cocci {
+    font-size: 7rem;
+    display: inline-block;
+    animation: marche 2.5s ease-in-out infinite;
+    margin-bottom: 14px;
+  }
+  @keyframes marche {
+    0%, 100% { transform: translateX(0) rotate(-3deg); }
+    50% { transform: translateX(15px) rotate(3deg); }
+  }
+  .btn-jouer {
+    background: var(--rouge);
+    color: white;
+    padding: 22px 56px;
+    font-size: 1.6rem;
+    margin-top: 16px;
+  }
+  .btn-jouer:hover { background: var(--rouge-fonce); }
+
+  .ecran-niveau-reussi h2, .ecran-fin h2 {
+    font-size: 2.3rem;
+    color: var(--vert-fonce);
+    margin-bottom: 16px;
+  }
+  .cocci-gagnee {
+    font-size: 7rem;
+    display: inline-block;
+    animation: tournoie 1s ease;
+    margin-bottom: 10px;
+  }
+  @keyframes tournoie {
+    0% { transform: scale(0) rotate(0deg); }
+    60% { transform: scale(1.4) rotate(360deg); }
+    100% { transform: scale(1) rotate(360deg); }
   }
   .gros-trophee {
-    font-size: 6rem;
+    font-size: 7rem;
     display: inline-block;
     animation: bondit 1s ease-in-out infinite;
   }
   @keyframes bondit {
     0%, 100% { transform: translateY(0) rotate(-5deg); }
-    50% { transform: translateY(-15px) rotate(5deg); }
+    50% { transform: translateY(-18px) rotate(5deg); }
   }
-  .etoiles-finales {
+  .rangee-cocci-finale {
     font-size: 3rem;
-    margin: 20px 0;
-    letter-spacing: 10px;
+    margin: 18px 0;
+    letter-spacing: 8px;
   }
 
-  .ecran-accueil {
-    text-align: center;
-    padding: 30px 20px;
-  }
-  .ecran-accueil h1 {
-    font-size: 2.5rem;
-    color: var(--bleu-fonce);
-    margin-bottom: 10px;
-  }
-  .ecran-accueil .sous-titre {
-    font-size: 1.3rem;
-    color: var(--texte);
-    margin-bottom: 30px;
-    opacity: 0.8;
-  }
-  .grosse-libellule {
-    font-size: 7rem;
-    display: inline-block;
-    animation: flotte 2s ease-in-out infinite;
-    margin-bottom: 20px;
-  }
-  .btn-jouer {
-    background: var(--rose);
-    color: white;
-    padding: 20px 50px;
-    font-size: 1.5rem;
-    margin-top: 20px;
-  }
-  .btn-jouer:hover { background: #e87599; }
-
+  /* ---- CONFETTIS ---- */
   .confetti {
     position: fixed;
     width: 12px;
@@ -442,100 +482,168 @@
     border-radius: 2px;
   }
 
+  /* ---- MOBILE ---- */
   @media (max-width: 600px) {
-    .titre-jeu { font-size: 1.3rem; }
-    .consigne { font-size: 1.1rem; }
-    .bulle { font-size: 1.2rem; padding: 16px 8px; }
-    .ecran-accueil h1 { font-size: 1.8rem; }
-    .gros-trophee { font-size: 4rem; }
+    .titre-jeu { font-size: 1.2rem; }
+    .consigne { font-size: 1.15rem; }
+    .bulle { font-size: 1.3rem; padding: 18px 6px; }
+    .ecran-accueil h1 { font-size: 1.6rem; }
+    .gros-trophee, .grosse-cocci, .cocci-gagnee { font-size: 5rem; }
+    .calc-ligne { font-size: 1.3rem; padding: 14px; }
+    .slot-cocci { width: 36px; height: 36px; font-size: 1.3rem; }
+    .relier-conteneur { grid-template-columns: 1fr 50px 1fr; }
+    .relier-calcul, .relier-reponse { font-size: 1.1rem; padding: 12px; }
   }
 </style>
 </head>
 <body>
 
 <div class="header">
-  <div class="titre-jeu">
-    <span class="libellule">🪰</span>
-    <span>Les Nombres Doubles</span>
+  <div class="header-haut">
+    <div class="titre-jeu">
+      <span style="font-size:1.8rem;">🐞</span>
+      <span>Les Doubles</span>
+    </div>
+    <div class="niveau-actuel" id="niveau-actuel">Bienvenue !</div>
   </div>
-  <div class="scoreboard">
-    <div class="score-pill">⭐ <span id="score">0</span></div>
+  <div class="collection-coccinelles" id="collection">
+    <!-- 7 slots remplis par JS -->
   </div>
 </div>
-
-<div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
 
 <div id="app"></div>
 
 <script>
   const app = document.getElementById('app');
-  const progress = document.getElementById('progress');
-  const scoreEl = document.getElementById('score');
+  const niveauActuelEl = document.getElementById('niveau-actuel');
+  const collectionEl = document.getElementById('collection');
+  const NB_NIVEAUX = 7;
 
-  let etapeActuelle = 0;
-  let score = 0;
-  const NB_ETAPES = 5;
+  let niveau = 0;
+  let cocciGagnees = 0;
+
+  function majCollection(nouvelleIdx = -1) {
+    collectionEl.innerHTML = '';
+    for (let i = 0; i < NB_NIVEAUX; i++) {
+      const s = document.createElement('div');
+      s.className = 'slot-cocci';
+      if (i < cocciGagnees) s.classList.add('gagnee');
+      if (i === nouvelleIdx) s.classList.add('nouvelle');
+      collectionEl.appendChild(s);
+    }
+  }
+  majCollection();
+
+  function majTitre() {
+    if (niveau === 0) niveauActuelEl.textContent = 'Bienvenue !';
+    else if (niveau > NB_NIVEAUX) niveauActuelEl.textContent = '🏆 Terminé !';
+    else niveauActuelEl.textContent = `Niveau ${niveau} / ${NB_NIVEAUX}`;
+  }
 
   // ---------- ECRAN ACCUEIL ----------
   function ecranAccueil() {
-    etapeActuelle = 0;
-    score = 0;
-    scoreEl.textContent = 0;
-    progress.style.width = '0%';
+    niveau = 0;
+    cocciGagnees = 0;
+    majCollection();
+    majTitre();
     app.innerHTML = `
       <div class="carte ecran-accueil">
-        <div class="grosse-libellule">🪰</div>
-        <h1>Bienvenue dans le jeu des doubles !</h1>
-        <p class="sous-titre">5 étapes amusantes t'attendent 🎈</p>
-        <p style="font-size:1.1rem; margin: 20px 0;">Tu vas gagner des ⭐ à chaque bonne réponse !</p>
-        <button class="btn btn-jouer" onclick="commencer()">🚀 C'est parti !</button>
+        <div class="grosse-cocci">🐞</div>
+        <h1>Salut petit champion !</h1>
+        <p class="sous-titre">Aide la coccinelle à gagner ses points !<br>
+        <b>7 niveaux</b> = <b>7 coccinelles</b> à collectionner 🐞</p>
+        <button class="btn btn-jouer" onclick="commencerNiveau(1)">🚀 C'est parti !</button>
       </div>
     `;
   }
 
-  function commencer() {
-    etapeActuelle = 1;
-    afficherEtape();
+  function commencerNiveau(n) {
+    niveau = n;
+    majTitre();
+    if (n === 1) niveau1();
+    else if (n === 2) niveau2();
+    else if (n === 3) niveau3();
+    else if (n === 4) niveau4();
+    else if (n === 5) niveau5();
+    else if (n === 6) niveau6();
+    else if (n === 7) niveau7();
+    else ecranFin();
   }
 
-  function majProgress() {
-    progress.style.width = ((etapeActuelle - 1) / NB_ETAPES * 100) + '%';
+  function gagnerCocci() {
+    const idx = cocciGagnees;
+    cocciGagnees++;
+    majCollection(idx);
+    confetti(50);
   }
 
-  function ajouterScore(n) {
-    score += n;
-    scoreEl.textContent = score;
-    scoreEl.parentElement.animate(
-      [{ transform: 'scale(1)' }, { transform: 'scale(1.3)' }, { transform: 'scale(1)' }],
-      { duration: 400 }
-    );
-  }
-
-  // ---------- ETAPE 1 : Entoure les doubles ----------
-  function etape1() {
-    const calculs = [
-      { txt: '4 + 4', double: true },
-      { txt: '3 + 2', double: false },
-      { txt: '7 + 7', double: true },
-      { txt: '5 + 6', double: false },
-      { txt: '9 + 9', double: true },
-      { txt: '2 + 5', double: false },
-      { txt: '6 + 6', double: true },
-      { txt: '8 + 3', double: false },
-      { txt: '1 + 1', double: true },
+  function ecranNiveauReussi() {
+    gagnerCocci();
+    const msgs = [
+      'Trop bien joué ! 🎉',
+      'Tu es génial(e) ! 🌟',
+      'Super coccinelle ! 🐞',
+      'Magnifique ! ✨',
+      'Bravo champion(ne) ! 👏',
+      'Tu déchires tout ! 💪',
+      'Incroyable ! 🎊'
     ];
+    const msg = msgs[Math.min(niveau - 1, msgs.length - 1)];
+    const apresClick = niveau < NB_NIVEAUX
+      ? `<button class="btn btn-suivant" style="margin: 20px auto 0; display: block;" onclick="commencerNiveau(${niveau + 1})">Niveau suivant →</button>`
+      : `<button class="btn btn-suivant" style="margin: 20px auto 0; display: block;" onclick="ecranFin()">Voir mon trophée 🏆</button>`;
+    app.innerHTML = `
+      <div class="carte ecran-niveau-reussi">
+        <div class="cocci-gagnee">🐞</div>
+        <h2>${msg}</h2>
+        <p style="font-size:1.3rem;">Tu as gagné une <b>nouvelle coccinelle</b> !</p>
+        <p style="font-size:1.1rem; margin-top:10px;">Total : ${cocciGagnees} / ${NB_NIVEAUX} 🐞</p>
+        ${apresClick}
+      </div>
+    `;
+  }
+
+  // ---------- helpers ----------
+  function melanger(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function btnReessayer(fn) {
+    return `<button class="btn btn-rejouer-niveau" onclick="(${fn})()">🔄 Je recommence !</button>`;
+  }
+
+  // ====================================================
+  // NIVEAU 1 : Clique sur les doubles
+  // ====================================================
+  function niveau1() {
+    const calculs = melanger([
+      { txt: '5 + 5', double: true },
+      { txt: '3 + 2', double: false },
+      { txt: '8 + 8', double: true },
+      { txt: '6 + 1', double: false },
+      { txt: '9 + 9', double: true },
+      { txt: '4 + 7', double: false },
+      { txt: '2 + 2', double: true },
+      { txt: '7 + 0', double: false },
+      { txt: '6 + 6', double: true },
+    ]);
     const choix = new Set();
 
     app.innerHTML = `
       <div class="carte">
-        <span class="etape-label">Étape 1 / ${NB_ETAPES}</span>
-        <p class="consigne">🎯 <b>Clique sur tous les doubles</b></p>
+        <span class="etape-label">Niveau 1 sur ${NB_NIVEAUX} 🐞</span>
+        <p class="consigne"><span class="gros-emoji">👆</span> Clique sur tous les <b>doubles</b> !</p>
         <div class="grille-doubles" id="grille1">
           ${calculs.map((c, i) => `<div class="bulle" data-i="${i}">${c.txt}</div>`).join('')}
         </div>
         <div class="feedback" id="fb1"></div>
         <div class="boutons">
-          <button class="btn btn-valider" onclick="validerEtape1()">✓ Valider</button>
+          <button class="btn btn-valider" onclick="validerN1()">✓ Valider</button>
         </div>
       </div>
     `;
@@ -543,54 +651,47 @@
     document.querySelectorAll('#grille1 .bulle').forEach(el => {
       el.addEventListener('click', () => {
         const i = parseInt(el.dataset.i);
-        if (choix.has(i)) {
-          choix.delete(i);
-          el.classList.remove('choisi-double');
-        } else {
-          choix.add(i);
-          el.classList.add('choisi-double');
-        }
+        if (choix.has(i)) { choix.delete(i); el.classList.remove('choisi-double'); }
+        else { choix.add(i); el.classList.add('choisi-double'); }
       });
     });
 
-    window.validerEtape1 = () => {
+    window.validerN1 = () => {
       let bons = 0, oublies = 0, mauvais = 0;
+      const totalDoubles = calculs.filter(c => c.double).length;
       calculs.forEach((c, i) => {
         const el = document.querySelector(`#grille1 .bulle[data-i="${i}"]`);
-        el.classList.remove('choisi-double', 'choisi-faux', 'oublie');
-        if (c.double && choix.has(i)) { bons++; el.classList.add('choisi-double'); }
+        el.classList.remove('choisi-double','choisi-faux','oublie','juste-vu');
+        if (c.double && choix.has(i)) { bons++; el.classList.add('juste-vu'); }
         else if (c.double && !choix.has(i)) { oublies++; el.classList.add('oublie'); }
         else if (!c.double && choix.has(i)) { mauvais++; el.classList.add('choisi-faux'); }
       });
       const fb = document.getElementById('fb1');
-      const totalBons = calculs.filter(c => c.double).length;
-      if (bons === totalBons && mauvais === 0) {
+      const btns = document.querySelector('.boutons');
+      if (bons === totalDoubles && mauvais === 0) {
         fb.className = 'feedback ok';
-        fb.textContent = '🎉 Parfait ! Tous les doubles trouvés !';
-        ajouterScore(3);
+        fb.textContent = '🎉 Parfait ! Tu as trouvé tous les doubles !';
+        btns.innerHTML = `<button class="btn btn-suivant" onclick="ecranNiveauReussi()">Gagner ma coccinelle 🐞</button>`;
         confetti();
       } else {
         fb.className = 'feedback info';
-        let msg = `Tu as trouvé ${bons}/${totalBons} doubles. `;
+        let msg = `Presque ! ${bons}/${totalDoubles} doubles trouvés. `;
         if (oublies > 0) msg += `👀 Tu en as oublié ${oublies}. `;
-        if (mauvais > 0) msg += `✗ ${mauvais} ne sont pas des doubles.`;
-        fb.textContent = msg.trim();
-        ajouterScore(bons);
+        if (mauvais > 0) msg += `✗ ${mauvais} ne sont pas des doubles. `;
+        msg += `Regarde bien puis on recommence !`;
+        fb.textContent = msg;
+        btns.innerHTML = btnReessayer('niveau1');
       }
-      document.querySelector('.btn-valider').style.display = 'none';
-      const btns = document.querySelector('.boutons');
-      btns.innerHTML += `<button class="btn btn-suivant" onclick="etapeSuivante()">Suivant →</button>`;
     };
   }
 
-  // ---------- ETAPE 2 : Doubles avec dominos ----------
-  function etape2() {
-    const dominos = [
-      { n: 2 }, { n: 4 }, { n: 5 }, { n: 3 }
-    ];
+  // ====================================================
+  // NIVEAU 2 : Dominos et doubles
+  // ====================================================
+  function niveau2() {
+    const dominos = [{ n: 4 }, { n: 6 }, { n: 5 }, { n: 3 }];
 
     function pointsDomino(n) {
-      // positions sur grille 3x3 (index 1-9, comme un dé)
       const positions = {
         1: [5],
         2: [1, 9],
@@ -609,10 +710,10 @@
 
     app.innerHTML = `
       <div class="carte">
-        <span class="etape-label">Étape 2 / ${NB_ETAPES}</span>
-        <p class="consigne">🎲 <b>Écris le double</b> de chaque domino</p>
+        <span class="etape-label">Niveau 2 sur ${NB_NIVEAUX} 🐞</span>
+        <p class="consigne"><span class="gros-emoji">🎲</span> Regarde le domino et écris le <b>double</b> !</p>
         <div class="dominos">
-          ${dominos.map((d, i) => `
+          ${dominos.map((d) => `
             <div class="domino-bloc">
               <div class="domino">
                 <div class="domino-cote">${pointsDomino(d.n)}</div>
@@ -625,13 +726,13 @@
         </div>
         <div class="feedback" id="fb2"></div>
         <div class="boutons">
-          <button class="btn btn-valider" onclick="validerEtape2()">✓ Valider</button>
+          <button class="btn btn-valider" onclick="validerN2()">✓ Valider</button>
         </div>
       </div>
     `;
 
-    window.validerEtape2 = () => {
-      let bons = 0, oublies = 0;
+    window.validerN2 = () => {
+      let bons = 0, oublies = 0, faux = 0;
       document.querySelectorAll('.input-double').forEach(inp => {
         const rep = parseInt(inp.dataset.rep);
         const val = parseInt(inp.value);
@@ -639,53 +740,49 @@
         inp.classList.remove('juste','faux','oublie');
         bloc.classList.remove('a-oublie');
         if (val === rep) { inp.classList.add('juste'); bons++; }
-        else if (isNaN(val) || inp.value === '') {
-          inp.classList.add('oublie');
-          bloc.classList.add('a-oublie');
-          inp.value = rep;
-          oublies++;
-        }
-        else { inp.classList.add('faux'); inp.value = rep; }
+        else if (isNaN(val) || inp.value === '') { inp.classList.add('oublie'); bloc.classList.add('a-oublie'); inp.value = rep; oublies++; }
+        else { inp.classList.add('faux'); inp.value = rep; faux++; }
       });
       const fb = document.getElementById('fb2');
-      if (bons === 4) {
+      const btns = document.querySelector('.boutons');
+      if (bons === dominos.length) {
         fb.className = 'feedback ok';
-        fb.textContent = '🌟 Bravo ! Toutes les réponses sont justes !';
-        ajouterScore(4);
+        fb.textContent = '🌟 Bravo ! Tu connais bien les doubles des dominos !';
+        btns.innerHTML = `<button class="btn btn-suivant" onclick="ecranNiveauReussi()">Gagner ma coccinelle 🐞</button>`;
         confetti();
       } else {
         fb.className = 'feedback info';
-        let msg = `Tu as ${bons}/4 bonnes réponses. `;
-        if (oublies > 0) msg += `👀 ${oublies} case${oublies>1?'s':''} oubliée${oublies>1?'s':''}. `;
-        msg += `Voici les bonnes valeurs !`;
+        let msg = `${bons}/${dominos.length} bonnes réponses. `;
+        if (oublies > 0) msg += `👀 ${oublies} oublié${oublies>1?'s':''}. `;
+        if (faux > 0) msg += `Regarde les bonnes réponses puis on recommence !`;
+        else msg += `On recommence !`;
         fb.textContent = msg;
-        ajouterScore(bons);
+        btns.innerHTML = btnReessayer('niveau2');
       }
-      document.querySelector('.btn-valider').style.display = 'none';
-      document.querySelector('.boutons').innerHTML += `<button class="btn btn-suivant" onclick="etapeSuivante()">Suivant →</button>`;
     };
   }
 
-  // ---------- ETAPE 3 : Relier ----------
-  function etape3() {
+  // ====================================================
+  // NIVEAU 3 : Relier
+  // ====================================================
+  function niveau3() {
     const paires = [
       { calc: '3 + 3', rep: 6 },
-      { calc: '8 + 8', rep: 16 },
-      { calc: '4 + 4', rep: 8 },
+      { calc: '5 + 5', rep: 10 },
       { calc: '9 + 9', rep: 18 },
+      { calc: '8 + 8', rep: 16 },
       { calc: '2 + 2', rep: 4 },
     ];
-    // mélanger les réponses
-    const reponsesMelangees = [...paires].sort(() => Math.random() - 0.5);
+    const reponsesMelangees = melanger(paires);
 
     let calculActif = null;
-    const liens = new Map(); // calcId -> repId
-    const couleurs = ['#ff6b6b', '#5ec5e6', '#ffd54a', '#6bd97a', '#b294ff'];
+    const liens = new Map();
+    const couleurs = ['#ff5252', '#5ec5e6', '#ffa726', '#6bd97a', '#b294ff'];
 
     app.innerHTML = `
       <div class="carte">
-        <span class="etape-label">Étape 3 / ${NB_ETAPES}</span>
-        <p class="consigne">🔗 <b>Relie</b> chaque calcul à sa réponse (clique l'un puis l'autre)</p>
+        <span class="etape-label">Niveau 3 sur ${NB_NIVEAUX} 🐞</span>
+        <p class="consigne"><span class="gros-emoji">🔗</span> Clique sur un <b>calcul</b> puis sur sa <b>réponse</b> !</p>
         <div class="relier-conteneur">
           <div class="col-calculs">
             ${paires.map((p, i) => `<div class="relier-calcul" data-c="${i}" data-rep="${p.rep}">${p.calc}</div>`).join('')}
@@ -697,7 +794,7 @@
         </div>
         <div class="feedback" id="fb3"></div>
         <div class="boutons">
-          <button class="btn btn-valider" onclick="validerEtape3()">✓ Valider</button>
+          <button class="btn btn-valider" onclick="validerN3()">✓ Valider</button>
         </div>
       </div>
     `;
@@ -705,7 +802,7 @@
     const svg = document.getElementById('svg-liens');
     const conteneur = document.querySelector('.relier-conteneur');
 
-    function redessinerLignes() {
+    function redessinerLignes(verdict = null) {
       const rect = conteneur.getBoundingClientRect();
       svg.setAttribute('viewBox', `0 0 ${rect.width} ${rect.height}`);
       svg.style.width = rect.width + 'px';
@@ -722,11 +819,15 @@
         const x2 = rR.left - rect.left;
         const y2 = rR.top + rR.height/2 - rect.top;
         const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        line.setAttribute('x1', x1);
-        line.setAttribute('y1', y1);
-        line.setAttribute('x2', x2);
-        line.setAttribute('y2', y2);
-        line.setAttribute('stroke', couleurs[idx % couleurs.length]);
+        line.setAttribute('x1', x1); line.setAttribute('y1', y1);
+        line.setAttribute('x2', x2); line.setAttribute('y2', y2);
+        let stroke = couleurs[idx % couleurs.length];
+        if (verdict) {
+          const repAttendue = parseInt(cEl.dataset.rep);
+          const repDonnee = parseInt(rEl.dataset.val);
+          stroke = repAttendue === repDonnee ? '#43a64f' : '#c83232';
+        }
+        line.setAttribute('stroke', stroke);
         line.setAttribute('stroke-width', 5);
         line.setAttribute('stroke-linecap', 'round');
         svg.appendChild(line);
@@ -736,7 +837,6 @@
 
     function essayerLien(rId) {
       if (calculActif === null) return;
-      // retirer ancien lien sur ce calcul et sur cette reponse
       liens.forEach((r, c) => {
         if (r === rId) {
           liens.delete(c);
@@ -751,7 +851,7 @@
 
     document.querySelectorAll('.relier-calcul').forEach(el => {
       el.addEventListener('click', () => {
-        if (el.classList.contains('lie')) return;
+        if (el.classList.contains('lie') || el.classList.contains('lie-faux')) return;
         document.querySelectorAll('.relier-calcul.actif').forEach(e => e.classList.remove('actif'));
         calculActif = parseInt(el.dataset.c);
         el.classList.add('actif');
@@ -759,17 +859,15 @@
     });
     document.querySelectorAll('.relier-reponse').forEach(el => {
       el.addEventListener('click', () => {
-        if (calculActif !== null) {
-          essayerLien(parseInt(el.dataset.r));
-        }
+        if (calculActif !== null) essayerLien(parseInt(el.dataset.r));
       });
     });
+    window.addEventListener('resize', () => redessinerLignes());
 
-    window.addEventListener('resize', redessinerLignes);
-
-    window.validerEtape3 = () => {
+    window.validerN3 = () => {
       let bons = 0;
-      const oublies = paires.length - liens.size;
+      const totalLiens = liens.size;
+      const oublies = paires.length - totalLiens;
       liens.forEach((rId, cId) => {
         const cEl = document.querySelector(`.relier-calcul[data-c="${cId}"]`);
         const rEl = document.querySelector(`.relier-reponse[data-r="${rId}"]`);
@@ -777,61 +875,63 @@
         const repDonnee = parseInt(rEl.dataset.val);
         if (repAttendue === repDonnee) {
           bons++;
-          cEl.classList.add('lie');
-          rEl.classList.add('lie');
+          cEl.classList.add('lie'); rEl.classList.add('lie');
+        } else {
+          cEl.classList.add('lie-faux'); rEl.classList.add('lie-faux');
         }
       });
-      // marquer les calculs non reliés en oubli
       document.querySelectorAll('.relier-calcul').forEach(el => {
-        const cId = parseInt(el.dataset.c);
-        if (!liens.has(cId)) el.classList.add('oublie');
+        if (!liens.has(parseInt(el.dataset.c))) el.classList.add('oublie');
       });
+      redessinerLignes(true);
       const fb = document.getElementById('fb3');
+      const btns = document.querySelector('.boutons');
       if (bons === paires.length) {
         fb.className = 'feedback ok';
-        fb.textContent = '🎊 Super ! Toutes les paires sont bien reliées !';
-        ajouterScore(5);
+        fb.textContent = '🎊 Super ! Toutes les paires sont bonnes !';
+        btns.innerHTML = `<button class="btn btn-suivant" onclick="ecranNiveauReussi()">Gagner ma coccinelle 🐞</button>`;
         confetti();
       } else {
         fb.className = 'feedback info';
         let msg = `${bons}/${paires.length} paires correctes. `;
-        if (oublies > 0) msg += `👀 ${oublies} pas relié${oublies>1?'s':''}.`;
+        if (oublies > 0) msg += `👀 ${oublies} pas relié${oublies>1?'s':''}. `;
+        msg += `On recommence !`;
         fb.textContent = msg;
-        ajouterScore(bons);
+        btns.innerHTML = btnReessayer('niveau3');
       }
-      document.querySelector('.btn-valider').style.display = 'none';
-      document.querySelector('.boutons').innerHTML += `<button class="btn btn-suivant" onclick="etapeSuivante()">Suivant →</button>`;
     };
   }
 
-  // ---------- ETAPE 4 : Calculs doubles à écrire ----------
-  function etape4() {
+  // ====================================================
+  // NIVEAU 4 : Trouver les bonnes réponses
+  // ====================================================
+  function niveau4() {
     const calculs = [
-      { a: 5, b: 5 },
-      { a: 7, b: 7 },
-      { a: 10, b: 10 },
       { a: 6, b: 6 },
+      { a: 9, b: 9 },
+      { a: 5, b: 5 },
+      { a: 8, b: 8 },
     ];
     app.innerHTML = `
       <div class="carte">
-        <span class="etape-label">Étape 4 / ${NB_ETAPES}</span>
-        <p class="consigne">✏️ <b>Trouve les réponses</b> des doubles</p>
+        <span class="etape-label">Niveau 4 sur ${NB_NIVEAUX} 🐞</span>
+        <p class="consigne"><span class="gros-emoji">✏️</span> Trouve la <b>bonne réponse</b> !</p>
         <div class="calcs-additions">
           ${calculs.map(c => `
             <div class="calc-ligne">
               <span>${c.a} + ${c.b} =</span>
               <input class="input-double" type="number" data-rep="${c.a+c.b}" inputmode="numeric" />
-              <span class="oubli-icone">👀 oublié</span>
+              <span class="oubli-icone">👀</span>
             </div>
           `).join('')}
         </div>
         <div class="feedback" id="fb4"></div>
         <div class="boutons">
-          <button class="btn btn-valider" onclick="validerEtape4()">✓ Valider</button>
+          <button class="btn btn-valider" onclick="validerN4()">✓ Valider</button>
         </div>
       </div>
     `;
-    window.validerEtape4 = () => {
+    window.validerN4 = () => {
       let bons = 0, oublies = 0;
       document.querySelectorAll('.input-double').forEach(inp => {
         const rep = parseInt(inp.dataset.rep);
@@ -840,56 +940,52 @@
         inp.classList.remove('juste','faux','oublie');
         ligne.classList.remove('a-oublie');
         if (val === rep) { inp.classList.add('juste'); bons++; }
-        else if (isNaN(val) || inp.value === '') {
-          inp.classList.add('oublie');
-          ligne.classList.add('a-oublie');
-          inp.value = rep;
-          oublies++;
-        }
+        else if (isNaN(val) || inp.value === '') { inp.classList.add('oublie'); ligne.classList.add('a-oublie'); inp.value = rep; oublies++; }
         else { inp.classList.add('faux'); inp.value = rep; }
       });
       const fb = document.getElementById('fb4');
-      if (bons === 4) {
+      const btns = document.querySelector('.boutons');
+      if (bons === calculs.length) {
         fb.className = 'feedback ok';
         fb.textContent = '💯 Génial ! Tu maîtrises les doubles !';
-        ajouterScore(4);
+        btns.innerHTML = `<button class="btn btn-suivant" onclick="ecranNiveauReussi()">Gagner ma coccinelle 🐞</button>`;
         confetti();
       } else {
         fb.className = 'feedback info';
-        let msg = `${bons}/4 bonnes réponses. `;
-        if (oublies > 0) msg += `👀 ${oublies} case${oublies>1?'s':''} oubliée${oublies>1?'s':''}. `;
-        msg += `Pas grave, on continue !`;
+        let msg = `${bons}/${calculs.length} bonnes réponses. `;
+        if (oublies > 0) msg += `👀 ${oublies} oublié${oublies>1?'s':''}. `;
+        msg += `Regarde puis on recommence !`;
         fb.textContent = msg;
-        ajouterScore(bons);
+        btns.innerHTML = btnReessayer('niveau4');
       }
-      document.querySelector('.btn-valider').style.display = 'none';
-      document.querySelector('.boutons').innerHTML += `<button class="btn btn-suivant" onclick="etapeSuivante()">Suivant →</button>`;
     };
   }
 
-  // ---------- ETAPE 5 : Écrire le double de chaque nombre ----------
-  function etape5() {
-    const nombres = [3, 8, 4, 6, 9, 5];
+  // ====================================================
+  // NIVEAU 5 : Écris le double de chaque nombre
+  // ====================================================
+  function niveau5() {
+    const nombres = [4, 7, 6, 3, 9, 5];
     app.innerHTML = `
       <div class="carte">
-        <span class="etape-label">Étape 5 / ${NB_ETAPES}</span>
-        <p class="consigne">🎯 <b>Écris le double</b> de chaque nombre</p>
+        <span class="etape-label">Niveau 5 sur ${NB_NIVEAUX} 🐞</span>
+        <p class="consigne"><span class="gros-emoji">✨</span> Écris le <b>double</b> de chaque nombre !</p>
         <div class="calcs-additions">
           ${nombres.map(n => `
             <div class="calc-ligne">
               <span>${n} →</span>
               <input class="input-double" type="number" data-rep="${n*2}" inputmode="numeric" />
-              <span class="oubli-icone">👀 oublié</span>
+              <span class="oubli-icone">👀</span>
             </div>
           `).join('')}
         </div>
         <div class="feedback" id="fb5"></div>
         <div class="boutons">
-          <button class="btn btn-valider" onclick="validerEtape5()">✓ Valider</button>
+          <button class="btn btn-valider" onclick="validerN5()">✓ Valider</button>
         </div>
       </div>
     `;
-    window.validerEtape5 = () => {
+    window.validerN5 = () => {
       let bons = 0, oublies = 0;
       document.querySelectorAll('.input-double').forEach(inp => {
         const rep = parseInt(inp.dataset.rep);
@@ -898,73 +994,170 @@
         inp.classList.remove('juste','faux','oublie');
         ligne.classList.remove('a-oublie');
         if (val === rep) { inp.classList.add('juste'); bons++; }
-        else if (isNaN(val) || inp.value === '') {
-          inp.classList.add('oublie');
-          ligne.classList.add('a-oublie');
-          inp.value = rep;
-          oublies++;
-        }
+        else if (isNaN(val) || inp.value === '') { inp.classList.add('oublie'); ligne.classList.add('a-oublie'); inp.value = rep; oublies++; }
         else { inp.classList.add('faux'); inp.value = rep; }
       });
       const fb = document.getElementById('fb5');
+      const btns = document.querySelector('.boutons');
       if (bons === nombres.length) {
         fb.className = 'feedback ok';
-        fb.textContent = '🏆 Champion(ne) des doubles !';
-        ajouterScore(6);
+        fb.textContent = '🏆 Tu connais tous les doubles par cœur !';
+        btns.innerHTML = `<button class="btn btn-suivant" onclick="ecranNiveauReussi()">Gagner ma coccinelle 🐞</button>`;
         confetti();
       } else {
         fb.className = 'feedback info';
         let msg = `${bons}/${nombres.length} bonnes réponses. `;
-        if (oublies > 0) msg += `👀 ${oublies} case${oublies>1?'s':''} oubliée${oublies>1?'s':''}.`;
+        if (oublies > 0) msg += `👀 ${oublies} oublié${oublies>1?'s':''}. `;
+        msg += `On recommence !`;
         fb.textContent = msg;
-        ajouterScore(bons);
+        btns.innerHTML = btnReessayer('niveau5');
       }
-      document.querySelector('.btn-valider').style.display = 'none';
-      document.querySelector('.boutons').innerHTML += `<button class="btn btn-suivant" onclick="ecranFin()">Terminer 🏁</button>`;
     };
   }
 
-  function etapeSuivante() {
-    etapeActuelle++;
-    afficherEtape();
+  // ====================================================
+  // NIVEAU 6 : Clique sur les calculs justes (double + résultat)
+  // ====================================================
+  function niveau6() {
+    const items = melanger([
+      { a: 2, b: 2, r: 4,  juste: true },
+      { a: 3, b: 3, r: 6,  juste: true },
+      { a: 4, b: 4, r: 9,  juste: false },
+      { a: 5, b: 5, r: 10, juste: true },
+      { a: 6, b: 6, r: 11, juste: false },
+      { a: 7, b: 7, r: 14, juste: true },
+      { a: 8, b: 8, r: 17, juste: false },
+      { a: 9, b: 9, r: 18, juste: true },
+    ]);
+    const choix = new Set();
+
+    app.innerHTML = `
+      <div class="carte">
+        <span class="etape-label">Niveau 6 sur ${NB_NIVEAUX} 🐞</span>
+        <p class="consigne"><span class="gros-emoji">🎯</span> Clique sur les calculs qui sont <b>justes</b> !</p>
+        <div class="grille-doubles" id="grille6">
+          ${items.map((c, i) => `<div class="bulle" data-i="${i}">${c.a} + ${c.b} = ${c.r}</div>`).join('')}
+        </div>
+        <div class="feedback" id="fb6"></div>
+        <div class="boutons">
+          <button class="btn btn-valider" onclick="validerN6()">✓ Valider</button>
+        </div>
+      </div>
+    `;
+
+    document.querySelectorAll('#grille6 .bulle').forEach(el => {
+      el.addEventListener('click', () => {
+        const i = parseInt(el.dataset.i);
+        if (choix.has(i)) { choix.delete(i); el.classList.remove('choisi-double'); }
+        else { choix.add(i); el.classList.add('choisi-double'); }
+      });
+    });
+
+    window.validerN6 = () => {
+      let bons = 0, oublies = 0, mauvais = 0;
+      const total = items.filter(c => c.juste).length;
+      items.forEach((c, i) => {
+        const el = document.querySelector(`#grille6 .bulle[data-i="${i}"]`);
+        el.classList.remove('choisi-double','choisi-faux','oublie','juste-vu');
+        if (c.juste && choix.has(i)) { bons++; el.classList.add('juste-vu'); }
+        else if (c.juste && !choix.has(i)) { oublies++; el.classList.add('oublie'); }
+        else if (!c.juste && choix.has(i)) { mauvais++; el.classList.add('choisi-faux'); }
+      });
+      const fb = document.getElementById('fb6');
+      const btns = document.querySelector('.boutons');
+      if (bons === total && mauvais === 0) {
+        fb.className = 'feedback ok';
+        fb.textContent = '🎯 Excellent ! Tous les justes trouvés !';
+        btns.innerHTML = `<button class="btn btn-suivant" onclick="ecranNiveauReussi()">Gagner ma coccinelle 🐞</button>`;
+        confetti();
+      } else {
+        fb.className = 'feedback info';
+        let msg = `${bons}/${total} bons trouvés. `;
+        if (oublies > 0) msg += `👀 ${oublies} oublié${oublies>1?'s':''}. `;
+        if (mauvais > 0) msg += `✗ ${mauvais} faux choisis. `;
+        msg += `On recommence !`;
+        fb.textContent = msg;
+        btns.innerHTML = btnReessayer('niveau6');
+      }
+    };
   }
 
-  function afficherEtape() {
-    majProgress();
-    if (etapeActuelle === 1) etape1();
-    else if (etapeActuelle === 2) etape2();
-    else if (etapeActuelle === 3) etape3();
-    else if (etapeActuelle === 4) etape4();
-    else if (etapeActuelle === 5) etape5();
-    else ecranFin();
+  // ====================================================
+  // NIVEAU 7 : Écris les doubles (final, plus de nombres)
+  // ====================================================
+  function niveau7() {
+    const nombres = [8, 2, 10, 7, 4, 6, 1, 9];
+    app.innerHTML = `
+      <div class="carte">
+        <span class="etape-label">Niveau 7 sur ${NB_NIVEAUX} 🐞 — Le dernier !</span>
+        <p class="consigne"><span class="gros-emoji">🌟</span> Le <b>défi final</b> ! Écris le double de chaque nombre !</p>
+        <div class="calcs-additions">
+          ${nombres.map(n => `
+            <div class="calc-ligne">
+              <span>double de ${n} =</span>
+              <input class="input-double" type="number" data-rep="${n*2}" inputmode="numeric" />
+              <span class="oubli-icone">👀</span>
+            </div>
+          `).join('')}
+        </div>
+        <div class="feedback" id="fb7"></div>
+        <div class="boutons">
+          <button class="btn btn-valider" onclick="validerN7()">✓ Valider</button>
+        </div>
+      </div>
+    `;
+    window.validerN7 = () => {
+      let bons = 0, oublies = 0;
+      document.querySelectorAll('.input-double').forEach(inp => {
+        const rep = parseInt(inp.dataset.rep);
+        const val = parseInt(inp.value);
+        const ligne = inp.closest('.calc-ligne');
+        inp.classList.remove('juste','faux','oublie');
+        ligne.classList.remove('a-oublie');
+        if (val === rep) { inp.classList.add('juste'); bons++; }
+        else if (isNaN(val) || inp.value === '') { inp.classList.add('oublie'); ligne.classList.add('a-oublie'); inp.value = rep; oublies++; }
+        else { inp.classList.add('faux'); inp.value = rep; }
+      });
+      const fb = document.getElementById('fb7');
+      const btns = document.querySelector('.boutons');
+      if (bons === nombres.length) {
+        fb.className = 'feedback ok';
+        fb.textContent = '🎉 INCROYABLE ! Tu as réussi le dernier défi !';
+        btns.innerHTML = `<button class="btn btn-suivant" onclick="ecranNiveauReussi()">Gagner la dernière coccinelle 🐞</button>`;
+        confetti(80);
+      } else {
+        fb.className = 'feedback info';
+        let msg = `${bons}/${nombres.length} bonnes réponses. `;
+        if (oublies > 0) msg += `👀 ${oublies} oublié${oublies>1?'s':''}. `;
+        msg += `Allez, on recommence !`;
+        fb.textContent = msg;
+        btns.innerHTML = btnReessayer('niveau7');
+      }
+    };
   }
 
+  // ====================================================
+  // ECRAN FIN
+  // ====================================================
   function ecranFin() {
-    progress.style.width = '100%';
-    const maxScore = 22;
-    let etoiles = 1;
-    if (score >= maxScore * 0.6) etoiles = 2;
-    if (score >= maxScore * 0.85) etoiles = 3;
-    const msg = etoiles === 3 ? 'Parfait, tu es un(e) PRO ! 🌟'
-              : etoiles === 2 ? 'Très bien joué ! 👏'
-              : 'Bravo d\'avoir fini ! 💪';
+    niveau = NB_NIVEAUX + 1;
+    majTitre();
     app.innerHTML = `
       <div class="carte ecran-fin">
         <div class="gros-trophee">🏆</div>
-        <h2>${msg}</h2>
-        <p style="font-size:1.3rem; margin: 10px 0;">Score : <b>${score}</b> ⭐</p>
-        <div class="etoiles-finales">
-          ${'⭐'.repeat(etoiles)}${'☆'.repeat(3-etoiles)}
-        </div>
-        <button class="btn btn-recommencer" onclick="ecranAccueil()">🔄 Rejouer</button>
+        <h2>BRAVO !</h2>
+        <p style="font-size:1.4rem; margin: 10px 0;">Tu as gagné <b>toutes les coccinelles</b> !</p>
+        <div class="rangee-cocci-finale">🐞🐞🐞🐞🐞🐞🐞</div>
+        <p style="font-size:1.2rem;">Tu es un(e) vrai(e) <b>champion(ne)</b> des doubles !</p>
+        <button class="btn btn-recommencer" style="margin-top: 20px;" onclick="ecranAccueil()">🔄 Rejouer</button>
       </div>
     `;
-    confetti(60);
+    confetti(100);
   }
 
   // ---------- CONFETTIS ----------
   function confetti(qte = 30) {
-    const couleurs = ['#ff6b6b', '#5ec5e6', '#ffd54a', '#6bd97a', '#b294ff', '#ff8fb1'];
+    const couleurs = ['#ff5252','#5ec5e6','#ffd54a','#6bd97a','#b294ff','#ff8fb1','#1f1f1f'];
     for (let i = 0; i < qte; i++) {
       const c = document.createElement('div');
       c.className = 'confetti';
@@ -976,10 +1169,8 @@
       const driftX = (Math.random() - 0.5) * 200;
       const rot = Math.random() * 720;
       c.animate(
-        [
-          { transform: `translate(0, 0) rotate(0deg)`, opacity: 1 },
-          { transform: `translate(${driftX}px, 110vh) rotate(${rot}deg)`, opacity: 0.5 }
-        ],
+        [{ transform: 'translate(0,0) rotate(0)', opacity: 1 },
+         { transform: `translate(${driftX}px, 110vh) rotate(${rot}deg)`, opacity: 0.5 }],
         { duration, easing: 'cubic-bezier(0.2, 0.7, 0.3, 1)' }
       );
       setTimeout(() => c.remove(), duration);
