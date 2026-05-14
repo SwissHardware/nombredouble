@@ -280,16 +280,18 @@
   .relier-conteneur {
     position: relative;
     display: grid;
-    grid-template-columns: 1fr 80px 1fr;
-    gap: 14px;
-    max-width: 540px;
+    grid-template-columns: 1fr 200px 1fr;
+    gap: 0;
+    max-width: 720px;
     margin: 0 auto;
   }
   .col-calculs, .col-reponses {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 18px;
   }
+  .col-calculs { padding-right: 6px; }
+  .col-reponses { padding-left: 6px; }
   .relier-calcul, .relier-reponse {
     background: linear-gradient(135deg, var(--fond), #ffeaca);
     border: 4px solid #f0d8a8;
@@ -491,7 +493,7 @@
     .gros-trophee, .grosse-cocci, .cocci-gagnee { font-size: 5rem; }
     .calc-ligne { font-size: 1.3rem; padding: 14px; }
     .slot-cocci { width: 36px; height: 36px; font-size: 1.3rem; }
-    .relier-conteneur { grid-template-columns: 1fr 50px 1fr; }
+    .relier-conteneur { grid-template-columns: 1fr 110px 1fr; }
     .relier-calcul, .relier-reponse { font-size: 1.1rem; padding: 12px; }
   }
 </style>
@@ -549,9 +551,9 @@
     app.innerHTML = `
       <div class="carte ecran-accueil">
         <div class="grosse-cocci">🐞</div>
-        <h1>Salut petit champion !</h1>
-        <p class="sous-titre">Aide la coccinelle à gagner ses points !<br>
-        <b>7 niveaux</b> = <b>7 coccinelles</b> à collectionner 🐞</p>
+        <h1>Salut champion(ne) !</h1>
+        <p class="sous-titre">Aide la coccinelle à collectionner ses amies ! 🐞<br>
+        <b>7 niveaux</b> à réussir = <b>7 coccinelles</b> à gagner</p>
         <button class="btn btn-jouer" onclick="commencerNiveau(1)">🚀 C'est parti !</button>
       </div>
     `;
@@ -677,8 +679,8 @@
         fb.className = 'feedback info';
         let msg = `Presque ! ${bons}/${totalDoubles} doubles trouvés. `;
         if (oublies > 0) msg += `👀 Tu en as oublié ${oublies}. `;
-        if (mauvais > 0) msg += `✗ ${mauvais} ne sont pas des doubles. `;
-        msg += `Regarde bien puis on recommence !`;
+        if (mauvais > 0) msg += `❌ ${mauvais} ne sont pas des doubles. `;
+        msg += `Allez, tu peux y arriver !`;
         fb.textContent = msg;
         btns.innerHTML = btnReessayer('niveau1');
       }
@@ -740,8 +742,8 @@
         inp.classList.remove('juste','faux','oublie');
         bloc.classList.remove('a-oublie');
         if (val === rep) { inp.classList.add('juste'); bons++; }
-        else if (isNaN(val) || inp.value === '') { inp.classList.add('oublie'); bloc.classList.add('a-oublie'); inp.value = rep; oublies++; }
-        else { inp.classList.add('faux'); inp.value = rep; faux++; }
+        else if (isNaN(val) || inp.value === '') { inp.classList.add('oublie'); bloc.classList.add('a-oublie'); oublies++; }
+        else { inp.classList.add('faux'); faux++; }
       });
       const fb = document.getElementById('fb2');
       const btns = document.querySelector('.boutons');
@@ -754,8 +756,8 @@
         fb.className = 'feedback info';
         let msg = `${bons}/${dominos.length} bonnes réponses. `;
         if (oublies > 0) msg += `👀 ${oublies} oublié${oublies>1?'s':''}. `;
-        if (faux > 0) msg += `Regarde les bonnes réponses puis on recommence !`;
-        else msg += `On recommence !`;
+        if (faux > 0) msg += `❌ ${faux} faux. `;
+        msg += `Tu vas y arriver !`;
         fb.textContent = msg;
         btns.innerHTML = btnReessayer('niveau2');
       }
@@ -893,9 +895,9 @@
         confetti();
       } else {
         fb.className = 'feedback info';
-        let msg = `${bons}/${paires.length} paires correctes. `;
+        let msg = `${bons}/${paires.length} paires bonnes. `;
         if (oublies > 0) msg += `👀 ${oublies} pas relié${oublies>1?'s':''}. `;
-        msg += `On recommence !`;
+        msg += `Tu peux le faire, on recommence !`;
         fb.textContent = msg;
         btns.innerHTML = btnReessayer('niveau3');
       }
@@ -940,8 +942,8 @@
         inp.classList.remove('juste','faux','oublie');
         ligne.classList.remove('a-oublie');
         if (val === rep) { inp.classList.add('juste'); bons++; }
-        else if (isNaN(val) || inp.value === '') { inp.classList.add('oublie'); ligne.classList.add('a-oublie'); inp.value = rep; oublies++; }
-        else { inp.classList.add('faux'); inp.value = rep; }
+        else if (isNaN(val) || inp.value === '') { inp.classList.add('oublie'); ligne.classList.add('a-oublie'); oublies++; }
+        else { inp.classList.add('faux'); }
       });
       const fb = document.getElementById('fb4');
       const btns = document.querySelector('.boutons');
@@ -954,7 +956,7 @@
         fb.className = 'feedback info';
         let msg = `${bons}/${calculs.length} bonnes réponses. `;
         if (oublies > 0) msg += `👀 ${oublies} oublié${oublies>1?'s':''}. `;
-        msg += `Regarde puis on recommence !`;
+        msg += `Tu vas y arriver !`;
         fb.textContent = msg;
         btns.innerHTML = btnReessayer('niveau4');
       }
@@ -994,8 +996,8 @@
         inp.classList.remove('juste','faux','oublie');
         ligne.classList.remove('a-oublie');
         if (val === rep) { inp.classList.add('juste'); bons++; }
-        else if (isNaN(val) || inp.value === '') { inp.classList.add('oublie'); ligne.classList.add('a-oublie'); inp.value = rep; oublies++; }
-        else { inp.classList.add('faux'); inp.value = rep; }
+        else if (isNaN(val) || inp.value === '') { inp.classList.add('oublie'); ligne.classList.add('a-oublie'); oublies++; }
+        else { inp.classList.add('faux'); }
       });
       const fb = document.getElementById('fb5');
       const btns = document.querySelector('.boutons');
@@ -1008,7 +1010,7 @@
         fb.className = 'feedback info';
         let msg = `${bons}/${nombres.length} bonnes réponses. `;
         if (oublies > 0) msg += `👀 ${oublies} oublié${oublies>1?'s':''}. `;
-        msg += `On recommence !`;
+        msg += `Tu peux le faire !`;
         fb.textContent = msg;
         btns.innerHTML = btnReessayer('niveau5');
       }
@@ -1074,8 +1076,8 @@
         fb.className = 'feedback info';
         let msg = `${bons}/${total} bons trouvés. `;
         if (oublies > 0) msg += `👀 ${oublies} oublié${oublies>1?'s':''}. `;
-        if (mauvais > 0) msg += `✗ ${mauvais} faux choisis. `;
-        msg += `On recommence !`;
+        if (mauvais > 0) msg += `❌ ${mauvais} faux choisi${mauvais>1?'s':''}. `;
+        msg += `Encore un essai !`;
         fb.textContent = msg;
         btns.innerHTML = btnReessayer('niveau6');
       }
@@ -1115,8 +1117,8 @@
         inp.classList.remove('juste','faux','oublie');
         ligne.classList.remove('a-oublie');
         if (val === rep) { inp.classList.add('juste'); bons++; }
-        else if (isNaN(val) || inp.value === '') { inp.classList.add('oublie'); ligne.classList.add('a-oublie'); inp.value = rep; oublies++; }
-        else { inp.classList.add('faux'); inp.value = rep; }
+        else if (isNaN(val) || inp.value === '') { inp.classList.add('oublie'); ligne.classList.add('a-oublie'); oublies++; }
+        else { inp.classList.add('faux'); }
       });
       const fb = document.getElementById('fb7');
       const btns = document.querySelector('.boutons');
@@ -1129,7 +1131,7 @@
         fb.className = 'feedback info';
         let msg = `${bons}/${nombres.length} bonnes réponses. `;
         if (oublies > 0) msg += `👀 ${oublies} oublié${oublies>1?'s':''}. `;
-        msg += `Allez, on recommence !`;
+        msg += `Allez courage, tu y es presque !`;
         fb.textContent = msg;
         btns.innerHTML = btnReessayer('niveau7');
       }
