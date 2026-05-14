@@ -146,6 +146,20 @@
     border-color: #d94848;
     animation: secoue 0.4s;
   }
+  .bulle.oublie {
+    background: #fff0c4;
+    border-color: var(--jaune);
+    border-style: dashed;
+    color: var(--texte);
+    position: relative;
+  }
+  .bulle.oublie::after {
+    content: '👀';
+    position: absolute;
+    top: -10px;
+    right: -8px;
+    font-size: 1.4rem;
+  }
   @keyframes secoue {
     0%, 100% { transform: translateX(0); }
     25% { transform: translateX(-8px); }
@@ -213,6 +227,22 @@
   .input-double:focus { outline: none; border-color: var(--bleu-fonce); background: white; }
   .input-double.juste { background: var(--vert); color: white; border-color: #43a64f; }
   .input-double.faux { background: var(--rouge); color: white; border-color: #d94848; animation: secoue 0.4s; }
+  .input-double.oublie {
+    background: #fff0c4;
+    border-color: var(--jaune);
+    border-style: dashed;
+    color: var(--texte);
+  }
+  .calc-ligne .oubli-icone, .domino-bloc .oubli-icone {
+    display: none;
+    color: #c98a00;
+    font-size: 0.95rem;
+    font-weight: bold;
+    margin-left: 8px;
+  }
+  .calc-ligne.a-oublie .oubli-icone, .domino-bloc.a-oublie .oubli-icone {
+    display: inline;
+  }
 
   .relier-zone {
     display: grid;
@@ -248,6 +278,20 @@
     color: white;
     border-color: #43a64f;
     cursor: default;
+  }
+  .relier-calcul.oublie, .relier-reponse.oublie {
+    background: #fff0c4;
+    border-color: var(--jaune);
+    border-style: dashed;
+    color: var(--texte);
+    position: relative;
+  }
+  .relier-calcul.oublie::after, .relier-reponse.oublie::after {
+    content: '👀';
+    position: absolute;
+    top: -10px;
+    right: -8px;
+    font-size: 1.2rem;
   }
   .relier-svg {
     grid-column: 2;
@@ -485,7 +529,7 @@
     app.innerHTML = `
       <div class="carte">
         <span class="etape-label">Étape 1 / ${NB_ETAPES}</span>
-        <p class="consigne">🎯 <b>Entoure tous les doubles</b> (tape dessus !)</p>
+        <p class="consigne">🎯 <b>Clique sur tous les doubles</b></p>
         <div class="grille-doubles" id="grille1">
           ${calculs.map((c, i) => `<div class="bulle" data-i="${i}">${c.txt}</div>`).join('')}
         </div>
@@ -510,11 +554,12 @@
     });
 
     window.validerEtape1 = () => {
-      let bons = 0, mauvais = 0;
+      let bons = 0, oublies = 0, mauvais = 0;
       calculs.forEach((c, i) => {
         const el = document.querySelector(`#grille1 .bulle[data-i="${i}"]`);
+        el.classList.remove('choisi-double', 'choisi-faux', 'oublie');
         if (c.double && choix.has(i)) { bons++; el.classList.add('choisi-double'); }
-        else if (c.double && !choix.has(i)) { el.classList.add('choisi-faux'); }
+        else if (c.double && !choix.has(i)) { oublies++; el.classList.add('oublie'); }
         else if (!c.double && choix.has(i)) { mauvais++; el.classList.add('choisi-faux'); }
       });
       const fb = document.getElementById('fb1');
@@ -526,7 +571,10 @@
         confetti();
       } else {
         fb.className = 'feedback info';
-        fb.textContent = `Tu as trouvé ${bons}/${totalBons} doubles. Les bonnes réponses sont en vert.`;
+        let msg = `Tu as trouvé ${bons}/${totalBons} doubles. `;
+        if (oublies > 0) msg += `👀 Tu en as oublié ${oublies}. `;
+        if (mauvais > 0) msg += `✗ ${mauvais} ne sont pas des doubles.`;
+        fb.textContent = msg.trim();
         ajouterScore(bons);
       }
       document.querySelector('.btn-valider').style.display = 'none';
@@ -570,7 +618,7 @@
                 <div class="domino-cote">${pointsDomino(d.n)}</div>
                 <div class="domino-cote">${pointsDomino(d.n)}</div>
               </div>
-              <div class="label-domino">double de ${d.n} =</div>
+              <div class="label-domino">double de ${d.n} = <span class="oubli-icone">👀 oublié</span></div>
               <input class="input-double" type="number" data-rep="${d.n*2}" inputmode="numeric" />
             </div>
           `).join('')}
@@ -583,11 +631,20 @@
     `;
 
     window.validerEtape2 = () => {
-      let bons = 0;
+      let bons = 0, oublies = 0;
       document.querySelectorAll('.input-double').forEach(inp => {
         const rep = parseInt(inp.dataset.rep);
         const val = parseInt(inp.value);
+        const bloc = inp.closest('.domino-bloc');
+        inp.classList.remove('juste','faux','oublie');
+        bloc.classList.remove('a-oublie');
         if (val === rep) { inp.classList.add('juste'); bons++; }
+        else if (isNaN(val) || inp.value === '') {
+          inp.classList.add('oublie');
+          bloc.classList.add('a-oublie');
+          inp.value = rep;
+          oublies++;
+        }
         else { inp.classList.add('faux'); inp.value = rep; }
       });
       const fb = document.getElementById('fb2');
@@ -598,7 +655,10 @@
         confetti();
       } else {
         fb.className = 'feedback info';
-        fb.textContent = `Tu as ${bons}/4 bonnes réponses. Voici les bonnes valeurs !`;
+        let msg = `Tu as ${bons}/4 bonnes réponses. `;
+        if (oublies > 0) msg += `👀 ${oublies} case${oublies>1?'s':''} oubliée${oublies>1?'s':''}. `;
+        msg += `Voici les bonnes valeurs !`;
+        fb.textContent = msg;
         ajouterScore(bons);
       }
       document.querySelector('.btn-valider').style.display = 'none';
@@ -625,7 +685,7 @@
     app.innerHTML = `
       <div class="carte">
         <span class="etape-label">Étape 3 / ${NB_ETAPES}</span>
-        <p class="consigne">🔗 <b>Relie</b> chaque calcul à sa réponse (tape l'un puis l'autre)</p>
+        <p class="consigne">🔗 <b>Relie</b> chaque calcul à sa réponse (clique l'un puis l'autre)</p>
         <div class="relier-conteneur">
           <div class="col-calculs">
             ${paires.map((p, i) => `<div class="relier-calcul" data-c="${i}" data-rep="${p.rep}">${p.calc}</div>`).join('')}
@@ -637,7 +697,7 @@
         </div>
         <div class="feedback" id="fb3"></div>
         <div class="boutons">
-          <button class="btn btn-valider" onclick="validerEtape3()" disabled>✓ Valider</button>
+          <button class="btn btn-valider" onclick="validerEtape3()">✓ Valider</button>
         </div>
       </div>
     `;
@@ -687,9 +747,6 @@
       document.querySelector(`.relier-calcul[data-c="${calculActif}"]`).classList.remove('actif');
       calculActif = null;
       redessinerLignes();
-      if (liens.size === paires.length) {
-        document.querySelector('.btn-valider').disabled = false;
-      }
     }
 
     document.querySelectorAll('.relier-calcul').forEach(el => {
@@ -712,6 +769,7 @@
 
     window.validerEtape3 = () => {
       let bons = 0;
+      const oublies = paires.length - liens.size;
       liens.forEach((rId, cId) => {
         const cEl = document.querySelector(`.relier-calcul[data-c="${cId}"]`);
         const rEl = document.querySelector(`.relier-reponse[data-r="${rId}"]`);
@@ -723,6 +781,11 @@
           rEl.classList.add('lie');
         }
       });
+      // marquer les calculs non reliés en oubli
+      document.querySelectorAll('.relier-calcul').forEach(el => {
+        const cId = parseInt(el.dataset.c);
+        if (!liens.has(cId)) el.classList.add('oublie');
+      });
       const fb = document.getElementById('fb3');
       if (bons === paires.length) {
         fb.className = 'feedback ok';
@@ -731,7 +794,9 @@
         confetti();
       } else {
         fb.className = 'feedback info';
-        fb.textContent = `${bons}/${paires.length} paires correctes. Continue !`;
+        let msg = `${bons}/${paires.length} paires correctes. `;
+        if (oublies > 0) msg += `👀 ${oublies} pas relié${oublies>1?'s':''}.`;
+        fb.textContent = msg;
         ajouterScore(bons);
       }
       document.querySelector('.btn-valider').style.display = 'none';
@@ -756,6 +821,7 @@
             <div class="calc-ligne">
               <span>${c.a} + ${c.b} =</span>
               <input class="input-double" type="number" data-rep="${c.a+c.b}" inputmode="numeric" />
+              <span class="oubli-icone">👀 oublié</span>
             </div>
           `).join('')}
         </div>
@@ -766,11 +832,20 @@
       </div>
     `;
     window.validerEtape4 = () => {
-      let bons = 0;
+      let bons = 0, oublies = 0;
       document.querySelectorAll('.input-double').forEach(inp => {
         const rep = parseInt(inp.dataset.rep);
         const val = parseInt(inp.value);
+        const ligne = inp.closest('.calc-ligne');
+        inp.classList.remove('juste','faux','oublie');
+        ligne.classList.remove('a-oublie');
         if (val === rep) { inp.classList.add('juste'); bons++; }
+        else if (isNaN(val) || inp.value === '') {
+          inp.classList.add('oublie');
+          ligne.classList.add('a-oublie');
+          inp.value = rep;
+          oublies++;
+        }
         else { inp.classList.add('faux'); inp.value = rep; }
       });
       const fb = document.getElementById('fb4');
@@ -781,7 +856,10 @@
         confetti();
       } else {
         fb.className = 'feedback info';
-        fb.textContent = `${bons}/4 bonnes réponses. Pas grave, on continue !`;
+        let msg = `${bons}/4 bonnes réponses. `;
+        if (oublies > 0) msg += `👀 ${oublies} case${oublies>1?'s':''} oubliée${oublies>1?'s':''}. `;
+        msg += `Pas grave, on continue !`;
+        fb.textContent = msg;
         ajouterScore(bons);
       }
       document.querySelector('.btn-valider').style.display = 'none';
@@ -801,6 +879,7 @@
             <div class="calc-ligne">
               <span>${n} →</span>
               <input class="input-double" type="number" data-rep="${n*2}" inputmode="numeric" />
+              <span class="oubli-icone">👀 oublié</span>
             </div>
           `).join('')}
         </div>
@@ -811,11 +890,20 @@
       </div>
     `;
     window.validerEtape5 = () => {
-      let bons = 0;
+      let bons = 0, oublies = 0;
       document.querySelectorAll('.input-double').forEach(inp => {
         const rep = parseInt(inp.dataset.rep);
         const val = parseInt(inp.value);
+        const ligne = inp.closest('.calc-ligne');
+        inp.classList.remove('juste','faux','oublie');
+        ligne.classList.remove('a-oublie');
         if (val === rep) { inp.classList.add('juste'); bons++; }
+        else if (isNaN(val) || inp.value === '') {
+          inp.classList.add('oublie');
+          ligne.classList.add('a-oublie');
+          inp.value = rep;
+          oublies++;
+        }
         else { inp.classList.add('faux'); inp.value = rep; }
       });
       const fb = document.getElementById('fb5');
@@ -826,7 +914,9 @@
         confetti();
       } else {
         fb.className = 'feedback info';
-        fb.textContent = `${bons}/${nombres.length} bonnes réponses.`;
+        let msg = `${bons}/${nombres.length} bonnes réponses. `;
+        if (oublies > 0) msg += `👀 ${oublies} case${oublies>1?'s':''} oubliée${oublies>1?'s':''}.`;
+        fb.textContent = msg;
         ajouterScore(bons);
       }
       document.querySelector('.btn-valider').style.display = 'none';
